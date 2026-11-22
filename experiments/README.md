@@ -1,5 +1,5 @@
-# Experiments / 实验
+语言 / Language：**简体中文** | [English](README.en.md)
 
-**EN:** Planned G/P/I/D comparisons, annotation data definitions, baselines, scripts and result analysis. Do not commit personal participant data.
+# 研究实验
 
-**中文：** 计划存放 G/P/I/D 条件实验、标注规范、基线方法、评估脚本和结果分析。请勿提交参与者个人数据。
+计划存放 G/P/I/D 对照实验、任务样本、标注方案、基线方法和分析脚本。请勿提交可识别参与者身份的数据。
