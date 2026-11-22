@@ -2,72 +2,67 @@ Language / 语言：[简体中文](README.md) | **English**
 
 # IntentAware-Agent
 
-**The University of Hong Kong · COMP7607 Natural Language Processing · Group 14**  
-**Project:** An Agent with Intent Awareness for Task Continuity and Asynchronous Delegation  
-**Status:** Planning and initial setup; features are not implemented yet.
+**HKU COMP7607 Natural Language Processing · Group 14**
+
+> **Status: proposed four-week lightweight desktop MVP, pending team and supervisor approval.** The repository has documentation placeholders but no runnable app yet.
 
 ## Overview
 
-We propose a browser-based focus companion that understands a user's current goal, interprets browsing activities in context, captures useful detours, and offers concrete steps to resume unfinished work. Users may also delegate side questions to a background agent and choose whether to see the results immediately or at a selected task checkpoint.
+A small desktop AI companion for writing, coding, reading and browsing. Users actively submit task context (or authorized text) to clarify goals, classify side activities, capture detours, resume work, and delegate side questions.
 
-## Planned features
+**Change from the submitted proposal:** The proposal specifies a browser extension, automatic activity interpretation on page changes, and browser-based experiments. The proposed pivot to **PySide6 desktop UI + user-supplied context** changes data collection and may affect evaluation, so **seek supervisor approval before replacing the proposed methodology**.
 
-1. **Goal clarification and activity interpretation:** Confirm the goal and next action; classify activities as direct progress, necessary preparation, optional exploration, or unclear. Proposed API labels: `direct_progress`, `necessary_preparation`, `optional_exploration`, `unclear`.
-2. **Detour capture and task resumption:** Save links and notes, record confirmed progress, and suggest actionable next steps.
-3. **Asynchronous delegation:** Turn side questions into editable requests, retrieve up to two public sources, and draft brief source-linked answers with evidence checks.
-4. **Deferred delivery:** Present answers at user-selected checkpoints, with options to view early or cancel.
+## Four MVP features
 
-## Proposed technical architecture
+1. **Goal & Intent:** Confirm goal and next step; classify activities as direct progress, necessary preparation, optional exploration or unclear, with explanations.
+2. **Detour & Resume:** Store side notes, links and confirmed progress; offer concrete resumption actions.
+3. **Async Delegation:** After confirmation, retrieve up to two public sources in the background and draft an answer with verified citations and unresolved points.
+4. **Deferred Delivery:** Condition I delivers when ready; D waits for a marked checkpoint, with early view/cancel options.
 
-- **Browser extension:** React + TypeScript, Chrome Manifest V3 sidebar
-- **Backend:** Python + FastAPI, separate asynchronous worker
-- **NLP:** Replaceable pretrained language-model provider
-- **State:** Browser session storage plus backend persistence where needed
-- **Evaluation:** Reproducible scripts and event logging
+## Simplified stack and scope
 
-> These are suggested implementation choices, not completed features or new course requirements. The submitted proposal defines the research scope.
+| Layer | Choice |
+|---|---|
+| Desktop GUI | PySide6 (Python) |
+| NLP | Replaceable pretrained LLM API with versioned prompt/model |
+| Data | SQLite |
+| Background jobs | Python worker/thread without blocking UI |
+| Analysis | pandas + scikit-learn |
 
-## Repository structure
+Out of scope for MVP: Electron, React, Chrome extension, automatically reading Word/VS Code/webpage bodies, continuous screenshots, keylogging, and cross-platform packaging. Optional Windows window title capture is not equivalent to understanding task content. Background work only needs to run while the app is open.
+
+## Four-week plan
+
+| Week | Milestone |
+|---|---|
+| 1 | Supervisor approval, role claims, PySide6 skeleton, shared data schema, LLM/SQLite and early study preparation |
+| 2 | Demoable Goal/Intent + Detour/Resume MVP |
+| 3 | Delegation, evidence checks, deferred delivery, G/P/I/D switching and pilot |
+| 4 | Evaluation, integration, demo and report |
+
+Recruitment, consent and ethics preparation must begin in week one; required approvals may exceed the schedule.
+
+## Evaluation safeguards
+
+Preserve **G** (goal reminders), **P** (+ detour capture/resumption), **I** (+ delegation, immediate delivery), and **D** (+ delegation, checkpoint delivery), with consistent shared controls. The submitted proposal plans 12–18 adults, 60 activity-context examples and 40 held-out delegation requests.
+
+**Measurement gap:** The proposal measures resumption time until the next meaningful main-task edit. A desktop UI with manual context submission may not observe edits in external programs. Use an instrumented controlled editor/log, or explicitly approve a revised proxy with the supervisor. A “return” click is not a meaningful edit.
+
+## Repo and claiming
 
 ```text
-apps/extension/       # Browser extension and sidebar
-services/backend/     # API, NLP and agent modules
-experiments/          # Study tasks, baselines and analysis
-docs/                 # Architecture, API contracts and protocol
-tests/                # Automated tests
-TODO.md               # 中文任务清单
-TODO.en.md            # English task list
-CONTRIBUTING.md       # 中文协作规范
-CONTRIBUTING.en.md    # English contribution guide
+src/intentaware/       # Planned Python desktop app and modules
+experiments/           # Study and metrics
+docs/                  # Architecture, protocols and claiming guide
+tests/                 # Automated tests
+TODO.md                # Chinese four-week checklist
+CONTRIBUTING.md        # Chinese contribution guide
 ```
 
-## Research plan
+[Claim GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [English acceptance guide](docs/WORKSTREAMS.en.md) · [English TODO](TODO.en.md) · [Contribution rules](CONTRIBUTING.en.md)
 
-The proposal specifies four conditions:
+A Desktop UI, B NLP, C Memory, D Delegation, E Evaluation, and shared F Contracts/Integration are open for claims. No person is preassigned.
 
-| Condition | Features |
-|---|---|
-| **G** | Goal-aware reminders |
-| **P** | G + detour capture and task resumption |
-| **I** | P + delegation with immediate delivery when ready |
-| **D** | P + delegation with checkpoint-based deferred delivery |
+## Privacy
 
-After a pilot, the plan includes a counterbalanced within-participant study with 12–18 adults, plus 60 task-context examples for activity classification and 40 held-out requests for delegation evaluation. See the proposal for the full measures and controls.
-
-## Getting started
-
-1. Read the [task list](TODO.en.md) and agree on owners and priorities.
-2. Agree on data structures and API contracts before parallel implementation.
-3. Follow the [contributing guide](CONTRIBUTING.en.md); implement features on separate branches and merge via Pull Requests.
-4. **The repository currently contains documentation and a directory skeleton, not a runnable application.**
-
-
-## Open workstreams — Claim a task
-
-There are [six claimable GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues): A Extension, B NLP Goal & Intent, C Task Memory, D Delegation, E Evaluation, and F Shared API & Integration (volunteer coordinator, all-member review). **No tasks are assigned yet.** Each Issue contains scope, steps, deliverables and acceptance criteria.
-
-See the [English claiming guide](docs/WORKSTREAMS.en.md) or [中文认领指南](docs/WORKSTREAMS.md). Comment directly on an Issue to claim a module or smaller subtask.
-
-## Privacy and research integrity
-
-Do not commit API keys, private browsing content, participant identities, or unconsented data. Never fabricate study results or citations.
+Obtain user consent before sending content to external models. Do not commit secrets, private files, raw browsing data or identifiable participant information; never fabricate results.
