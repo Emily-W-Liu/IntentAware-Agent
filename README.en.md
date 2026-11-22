@@ -2,67 +2,92 @@ Language / 语言：[简体中文](README.md) | **English**
 
 # IntentAware-Agent
 
-**HKU COMP7607 Natural Language Processing · Group 14**
-
-> **Status: proposed four-week lightweight desktop MVP, pending team and supervisor approval.** The repository has documentation placeholders but no runnable app yet.
+**HKU COMP7607 · Natural Language Processing · Group 14**
 
 ## Overview
 
-A small desktop AI companion for writing, coding, reading and browsing. Users actively submit task context (or authorized text) to clarify goals, classify side activities, capture detours, resume work, and delegate side questions.
+**IntentAware-Agent** is a desktop AI task companion for studying, writing, and coding. It interprets side activities in the context of a user's primary goal, captures useful detours and progress, and helps users resume work after interruptions. Users can delegate non-urgent questions to a background agent and choose when to view the results.
 
-**Change from the submitted proposal:** The proposal specifies a browser extension, automatic activity interpretation on page changes, and browser-based experiments. The proposed pivot to **PySide6 desktop UI + user-supplied context** changes data collection and may affect evaluation, so **seek supervisor approval before replacing the proposed methodology**.
+### Typical workflow
 
-## Four MVP features
+1. **Set a goal:** Enter the current task and next action, such as “Finish the Related Work section of my paper.”
+2. **Provide context:** Describe the current activity, ask a side question, or paste text for analysis.
+3. **Interpret activity:** The agent classifies it as direct progress, necessary preparation, optional exploration, or unclear, with an explanation.
+4. **Capture or delegate:** Save detours or let the agent research a side question in the background.
+5. **Resume work:** Get an actionable next step based on confirmed progress; view delegated answers immediately or at a task checkpoint.
 
-1. **Goal & Intent:** Confirm goal and next step; classify activities as direct progress, necessary preparation, optional exploration or unclear, with explanations.
-2. **Detour & Resume:** Store side notes, links and confirmed progress; offer concrete resumption actions.
-3. **Async Delegation:** After confirmation, retrieve up to two public sources in the background and draft an answer with verified citations and unresolved points.
-4. **Deferred Delivery:** Condition I delivers when ready; D waits for a marked checkpoint, with early view/cancel options.
+## Core features
 
-## Simplified stack and scope
+| Module | Responsibilities |
+| --- | --- |
+| **Goal & Intent** | Clarify the main goal and next step; classify activities in context with explanations |
+| **Detour & Resume** | Store links, notes, and confirmed progress; suggest concrete resumption actions |
+| **Async Delegation** | Turn questions into editable requests; retrieve up to two public sources and draft cited answers |
+| **Deferred Delivery** | Control when results appear; support checkpoints, early viewing, and cancellation |
+| **Experiment & Evaluation** | Log task events, switch study conditions, and evaluate classification and task continuity |
 
-| Layer | Choice |
-|---|---|
-| Desktop GUI | PySide6 (Python) |
-| NLP | Replaceable pretrained LLM API with versioned prompt/model |
-| Data | SQLite |
-| Background jobs | Python worker/thread without blocking UI |
-| Analysis | pandas + scikit-learn |
+## Tech stack
 
-Out of scope for MVP: Electron, React, Chrome extension, automatically reading Word/VS Code/webpage bodies, continuous screenshots, keylogging, and cross-platform packaging. Optional Windows window title capture is not equivalent to understanding task content. Background work only needs to run while the app is open.
+| Component | Technology |
+| --- | --- |
+| Desktop GUI | **Python + PySide6** |
+| NLP inference | Replaceable pretrained LLM API |
+| Local persistence | SQLite |
+| Background processing | Python worker / thread |
+| Experiment analysis | pandas + scikit-learn |
+| Automated tests | pytest |
 
-## Four-week plan
+The application uses modular Python components. Users provide the context they want analyzed, while task state is stored locally. Long-running retrieval jobs execute in the background so the UI remains responsive.
 
-| Week | Milestone |
-|---|---|
-| 1 | Supervisor approval, role claims, PySide6 skeleton, shared data schema, LLM/SQLite and early study preparation |
-| 2 | Demoable Goal/Intent + Detour/Resume MVP |
-| 3 | Delegation, evidence checks, deferred delivery, G/P/I/D switching and pilot |
-| 4 | Evaluation, integration, demo and report |
+## Research and evaluation
 
-Recruitment, consent and ethics preparation must begin in week one; required approvals may exceed the schedule.
+Four feature conditions are compared:
 
-## Evaluation safeguards
+| Condition | Capabilities |
+| --- | --- |
+| **G** | Goal-aware reminders |
+| **P** | G + detour capture and task resumption |
+| **I** | P + asynchronous delegation, with results shown when ready |
+| **D** | P + asynchronous delegation, with checkpoint-based delivery (early viewing allowed) |
 
-Preserve **G** (goal reminders), **P** (+ detour capture/resumption), **I** (+ delegation, immediate delivery), and **D** (+ delegation, checkpoint delivery), with consistent shared controls. The submitted proposal plans 12–18 adults, 60 activity-context examples and 40 held-out delegation requests.
+The evaluation plan includes a pilot, a within-participant study with **12–18 adults**, **60 task-context examples**, and **40 held-out delegation requests**.
 
-**Measurement gap:** The proposal measures resumption time until the next meaningful main-task edit. A desktop UI with manual context submission may not observe edits in external programs. Use an instrumented controlled editor/log, or explicitly approve a revised proxy with the supervisor. A “return” click is not a meaningful edit.
+Key measures include macro-F1 and false-warning rates for activity classification, task completion and output quality, resumption time, source support, perceived burden, latency, and token usage. Resumption time ends at the next observable meaningful main-task edit.
 
-## Repo and claiming
+## Four-week development plan
+
+| Week | Main deliverables |
+| --- | --- |
+| **1** | Project foundation, PySide6 UI, shared schemas, SQLite and LLM adapters; begin study preparation |
+| **2** | End-to-end Goal & Intent and Detour & Resume flow |
+| **3** | Async Delegation, Deferred Delivery, study-condition switches, and integration tests |
+| **4** | Pilot and evaluation, analysis, demo, and final report |
+
+## Project layout
 
 ```text
-src/intentaware/       # Planned Python desktop app and modules
-experiments/           # Study and metrics
-docs/                  # Architecture, protocols and claiming guide
-tests/                 # Automated tests
-TODO.md                # Chinese four-week checklist
-CONTRIBUTING.md        # Chinese contribution guide
+src/intentaware/
+├── ui/             # Desktop interface
+├── nlp/            # Goal understanding and activity classification
+├── memory/         # Progress, detours, and resumption
+├── delegation/     # Background requests and result delivery
+└── contracts/      # Shared schemas and interfaces
+
+experiments/        # Study tasks, logs, and analysis
+tests/              # Automated tests
+docs/               # Technical documentation and workstream guides
+TODO.md             # Development checklist
+CONTRIBUTING.md     # Team workflow
 ```
 
-[Claim GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [English acceptance guide](docs/WORKSTREAMS.en.md) · [English TODO](TODO.en.md) · [Contribution rules](CONTRIBUTING.en.md)
+## Team collaboration
 
-A Desktop UI, B NLP, C Memory, D Delegation, E Evaluation, and shared F Contracts/Integration are open for claims. No person is preassigned.
+Team members can claim an entire workstream or specific subtasks through GitHub Issues:
 
-## Privacy
+**[A Desktop UI](../../issues/1)** · **[B NLP](../../issues/2)** · **[C Task Memory](../../issues/3)** · **[D Delegation](../../issues/4)** · **[E Evaluation](../../issues/5)** · **[F Contracts & Integration](../../issues/6)**
 
-Obtain user consent before sending content to external models. Do not commit secrets, private files, raw browsing data or identifiable participant information; never fabricate results.
+[All open tasks](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [Claiming & acceptance guide](docs/WORKSTREAMS.en.md) · [Development TODO](TODO.en.md) · [Contributing guide](CONTRIBUTING.en.md)
+
+## Data and privacy
+
+Only use user-supplied or explicitly approved context. Keep API keys in local environment variables and avoid identifiable personal data in study records.
