@@ -1,25 +1,31 @@
+Language / 语言：[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/2) | **English**
+
 # B — Goal & Intent NLP
 
-[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/2) | **English**
+> Four-week **PySide6 + Python + SQLite** desktop MVP. Replacing the browser-extension approach from the submitted proposal requires supervisor approval. No role is assigned by default.
 
 ## Scope
-Clarify the user's goal and next action; interpret activities from the goal, confirmed progress, user-approved page excerpts, and task dependencies. This is the central NLP module.
 
-## Implementation guide
-1. Define structured goal clarification with concrete outcome, next action, and at most one clarification.
-2. Agree on input schema: goal, confirmed progress, page title, approved excerpt, and user-specified dependencies.
-3. Output one of `direct_progress`, `necessary_preparation`, `optional_exploration`, or `unclear` with a brief reason.
-4. Do not automatically trigger warnings for uncertain cases; allow silence or optional clarification.
-5. Version prompts, model and generation settings. Work with E on keyword baseline and ensure held-out evaluation data never leaks into prompt development.
+Structured goal clarification and contextual four-category activity inference with reasons using a replaceable LLM adapter.
+
+## Implementation guidance
+
+Agree on Goal/ActivityContext/Classification types; version prompts and model settings; implement direct_progress, necessary_preparation, optional_exploration, unclear; avoid false prompts; coordinate keyword baseline.
 
 ## Deliverables
-Modules under `services/backend/app/modules/goals/` and `intent/`, prompt/configuration records, schemas, sample JSON, tests and error analysis.
 
-## Acceptance checklist
-- [ ] Valid structured goal and next-action output without inventing completed work.
-- [ ] Reproducible examples for all four activity categories, each with reasons.
-- [ ] The same CV page yields context-sensitive decisions for different goals/dependencies.
-- [ ] Uncertainty is handled conservatively and false prompts can be measured.
-- [ ] Reproducible batch evaluation with fixed settings and a keyword baseline.
+Code and documentation under `src/intentaware/nlp/` (planned), with setup steps, mock fixtures and runnable tests. Record dependencies and any limitations.
 
-**Dependencies:** F schemas, E evaluation protocol. **Branch:** `feature/intent-classifier`.
+## Acceptance criteria
+
+Valid structured output and cases for each label; context-sensitive results across different goals; uncertainty handled; batch tests and held-out split are reproducible.
+
+**Every contribution also requires** a reproducible normal and failure test, compatible shared interfaces, no unapproved data or secrets, and PR review by another member.
+
+## How to claim
+
+Comment on the [corresponding Issue](https://github.com/Ir1svanquish/IntentAware-Agent/issues/2) with your chosen module or subtask, scope, deliverable and dependencies. A maintainer confirms assignment; multiple contributors can split the task.
+
+**Suggested branch:** `feature/intent-nlp`
+
+[English overview](../WORKSTREAMS.en.md) · [中文总指南](../WORKSTREAMS.md)
