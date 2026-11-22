@@ -1,5 +1,5 @@
 语言 / Language：**简体中文** | [English](README.en.md)
 
-# 浏览器扩展
+# 旧版浏览器扩展目录（暂停使用）
 
-计划使用 React + TypeScript 开发 Chrome 侧边栏、网页事件监听和后端 API 客户端。当前尚未实现。
+四周简化版现拟采用 **PySide6 Python 桌面应用**，此目录属于早期 Proposal 对应的占位结构，**并无实现代码**。为保留原计划历史，暂不删除。新开发请转至 `src/intentaware/`。原 Proposal 与桌面实现的偏离仍需导师确认。
