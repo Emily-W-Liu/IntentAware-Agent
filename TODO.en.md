@@ -52,6 +52,13 @@ Language / 语言：[简体中文](TODO.md) | **English**
 - [ ] Write results, discussion, and final report
 - [ ] Verify final submission materials
 
+
+## Claim a workstream
+
+[GitHub Issues: open workstreams](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [English claiming and acceptance guide](docs/WORKSTREAMS.en.md) · [中文说明](docs/WORKSTREAMS.md)
+
+Members may claim modules or subtasks by commenting on an Issue. A maintainer can then assign the owner. Deliverables must satisfy the Issue's acceptance checklist.
+
 ## Definition of done
 
 - A task is done only with committed code/docs and a reproducible test or demonstration.
