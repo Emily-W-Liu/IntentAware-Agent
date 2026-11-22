@@ -61,6 +61,13 @@ After a pilot, the plan includes a counterbalanced within-participant study with
 3. Follow the [contributing guide](CONTRIBUTING.en.md); implement features on separate branches and merge via Pull Requests.
 4. **The repository currently contains documentation and a directory skeleton, not a runnable application.**
 
+
+## Open workstreams — Claim a task
+
+There are [six claimable GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues): A Extension, B NLP Goal & Intent, C Task Memory, D Delegation, E Evaluation, and F Shared API & Integration (volunteer coordinator, all-member review). **No tasks are assigned yet.** Each Issue contains scope, steps, deliverables and acceptance criteria.
+
+See the [English claiming guide](docs/WORKSTREAMS.en.md) or [中文认领指南](docs/WORKSTREAMS.md). Comment directly on an Issue to claim a module or smaller subtask.
+
 ## Privacy and research integrity
 
 Do not commit API keys, private browsing content, participant identities, or unconsented data. Never fabricate study results or citations.
