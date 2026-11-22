@@ -1,5 +1,5 @@
-# Tests / 测试
+语言 / Language：**简体中文** | [English](README.en.md)
 
-**EN:** Planned unit and integration tests. Add reproducible checks alongside implementation.
+# 自动化测试
 
-**中文：** 计划存放单元测试和集成测试。功能实现时同步补充可复现的验证方法。
+计划存放单元测试与集成测试。开发功能时应同时添加可复现的验证方法。
