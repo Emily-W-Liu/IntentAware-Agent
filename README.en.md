@@ -88,6 +88,11 @@ Team members can claim an entire workstream or specific subtasks through GitHub 
 
 [All open tasks](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [Claiming & acceptance guide](docs/WORKSTREAMS.en.md) · [Development TODO](TODO.en.md) · [Contributing guide](CONTRIBUTING.en.md)
 
+
+### Join the development team
+
+Group members can comment with their GitHub handle and preferred module in [Join Request Issue #7](https://github.com/Ir1svanquish/IntentAware-Agent/issues/7). Maintainers can invite verified teammates; contributors may also fork and open Pull Requests.
+
 ## Data and privacy
 
 Only use user-supplied or explicitly approved context. Keep API keys in local environment variables and avoid identifiable personal data in study records.
