@@ -1,25 +1,31 @@
-# A — Browser Extension & UX
+Language / 语言：[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/1) | **English**
 
-[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/1) | **English**
+# A — Desktop UI & UX
+
+> Four-week **PySide6 + Python + SQLite** desktop MVP. Replacing the browser-extension approach from the submitted proposal requires supervisor approval. No role is assigned by default.
 
 ## Scope
-Build a React + TypeScript Chrome Manifest V3 sidebar to show the user goal, context-aware activity prompts, detour capture, resumption suggestions, and delegation controls. The extension is a frontend client; NLP inference belongs to module B.
 
-## Implementation guide
-1. Bootstrap a buildable extension with a manifest and side panel entry point; document how to load it in Chrome.
-2. Add goal confirmation, progress view, classification explanation, detour save/edit, and resumption controls.
-3. Add editable delegation confirmation, status, early-view, cancel, and checkpoint interactions.
-4. Capture minimal page context (title/URL); obtain user permission before sending excerpts. Support pause/dismiss controls.
-5. Follow the F API contract. Use mocked request/response fixtures until backend endpoints are available.
+PySide6 main window with manually entered/approved goal and context, four-class explanation, detour management, resumption, delegation and checkpoint controls.
+
+## Implementation guidance
+
+Bootstrap a runnable Python desktop entry point; implement context/goal forms; show output and error/loading states; use shared F contracts/mock fixtures; never automatically read Word/VS Code/browser content.
 
 ## Deliverables
-Source in `apps/extension/`, setup instructions, UI walkthrough/screenshots, tests, and a list of required API endpoints.
 
-## Acceptance checklist
-- [ ] A fresh developer can build, load, and open the extension using the README.
-- [ ] With mock responses, demonstrate goal → activity prompt → detour capture → resumption.
-- [ ] Loading, empty, failure, and success UI states are handled without silent errors.
-- [ ] No page excerpt is sent without consent, and pause/dismiss works.
-- [ ] The same UI can support G/P/I/D feature settings, without separate applications.
+Code and documentation under `src/intentaware/ui/` (planned), with setup steps, mock fixtures and runnable tests. Record dependencies and any limitations.
 
-**Dependencies:** F contracts; B, C and D response schemas. **Branch:** `feature/extension-sidebar`.
+## Acceptance criteria
+
+A new developer can run the app; mock goal→classification→detour→resume works; background jobs do not freeze UI; consent and G/P/I/D controls work.
+
+**Every contribution also requires** a reproducible normal and failure test, compatible shared interfaces, no unapproved data or secrets, and PR review by another member.
+
+## How to claim
+
+Comment on the [corresponding Issue](https://github.com/Ir1svanquish/IntentAware-Agent/issues/1) with your chosen module or subtask, scope, deliverable and dependencies. A maintainer confirms assignment; multiple contributors can split the task.
+
+**Suggested branch:** `feature/desktop-ui`
+
+[English overview](../WORKSTREAMS.en.md) · [中文总指南](../WORKSTREAMS.md)
