@@ -52,6 +52,13 @@
 - [ ] 完成实验结果、讨论和最终报告
 - [ ] 核对最终提交材料
 
+
+## 组员认领入口
+
+[GitHub Issues：开放任务板块](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [中文认领与验收指南](docs/WORKSTREAMS.md) · [English](docs/WORKSTREAMS.en.md)
+
+所有任务均可由组员自由认领或拆成子任务；先在 Issue 评论确认，再由维护者设置 Assignee。每项工作必须按 Issue 的验收标准交付。
+
 ## 完成标准
 
 - 任务只有在相关代码或文档提交，并有可复验的测试或演示后才能勾选。
