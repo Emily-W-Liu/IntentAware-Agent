@@ -1,26 +1,31 @@
-# D — Asynchronous Delegation & Deferred Delivery
+Language / 语言：[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/4) | **English**
 
-[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/4) | **English**
+# D — Python Async Delegation & Delivery
+
+> Four-week **PySide6 + Python + SQLite** desktop MVP. Replacing the browser-extension approach from the submitted proposal requires supervisor approval. No role is assigned by default.
 
 ## Scope
-Handle confirmed side questions as background jobs, retrieve up to two public sources, check evidence, and deliver results immediately (I) or at a user checkpoint (D).
 
-## Implementation guide
-1. Transform question, approved excerpt and optional note into an editable request; allow no more than one clarification.
-2. Define durable draft, confirmed, queued, running, ready, delivered, failed and cancelled states.
-3. Execute retrieval in a separate worker and record sources, latency and errors; never depend on a permanently running browser extension service worker.
-4. Produce a short answer with traceable source links and unresolved points. Validate answer support against retrieved material.
-5. Implement immediate display for I and checkpoint delivery for D, including view early, draft edits and cancellation.
-6. Test timeout, retry, restart and failure behavior.
+Run confirmed questions asynchronously while the app is open, retrieve at most two public sources and deliver results at appropriate times.
+
+## Implementation guidance
+
+Editable request and at most one clarification; non-blocking worker with job states; checked source links, unresolved points, timeout/error/cancel; I immediate and D checkpoint delivery with early view.
 
 ## Deliverables
-Delegation and delivery backend modules, worker, API contracts, mock retriever, tests and usage guide.
 
-## Acceptance checklist
-- [ ] A request can be created, confirmed, run and viewed end-to-end.
-- [ ] No more than two public sources are used, and citations map to retrieved content.
-- [ ] I/D share model, source budget and answer format, changing delivery timing only.
-- [ ] Early viewing works in D and cancelled jobs do not unexpectedly deliver later.
-- [ ] Timeouts, worker errors and restart cases have observable status and documented handling.
+Code and documentation under `src/intentaware/delegation/` (planned), with setup steps, mock fixtures and runnable tests. Record dependencies and any limitations.
 
-**Dependencies:** F contract/job model and A controls. **Branch:** `feature/delegation-agent`.
+## Acceptance criteria
+
+Full demo, citations traceable to at most two sources, I/D share model and answer format, job errors/cancel/early view verified, offline mock retriever.
+
+**Every contribution also requires** a reproducible normal and failure test, compatible shared interfaces, no unapproved data or secrets, and PR review by another member.
+
+## How to claim
+
+Comment on the [corresponding Issue](https://github.com/Ir1svanquish/IntentAware-Agent/issues/4) with your chosen module or subtask, scope, deliverable and dependencies. A maintainer confirms assignment; multiple contributors can split the task.
+
+**Suggested branch:** `feature/delegation`
+
+[English overview](../WORKSTREAMS.en.md) · [中文总指南](../WORKSTREAMS.md)
