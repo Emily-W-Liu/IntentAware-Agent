@@ -1,66 +1,46 @@
 Language / 语言：[简体中文](TODO.md) | **English**
 
-# Project TODO
+# Four-week Sprint Checklist
 
-**COMP7607 NLP · Group 14**  
-**Status:** Initial planning; only documentation and the directory skeleton have been initialized.
+> **Desktop pivot pending supervisor approval.** Unchecked items are not completed. Claim modules in [GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues).
 
-> Check a box only after actual completion and verification. Proposed roles: A (Extension), B (NLP), C (Task Memory), D (Delegation), E (Evaluation & Integration). **No students have been assigned yet.**
+## Week 1 — Foundation and early study preparation
 
-## P0 — Setup & shared contracts
+- [ ] [Team] Confirm supervisor approval for replacing browser extension/automatic page interpretation with desktop app/manual context
+- [ ] [Team] Claim five roles and an F contract coordinator (may overlap)
+- [ ] [F] Define Goal, Activity, Detour, DelegationJob, Checkpoint, ExperimentEvent contracts
+- [ ] [A] Initialize runnable PySide6 UI with goal/context input
+- [ ] [C/F] Set up SQLite storage interface
+- [ ] [B] Implement replaceable LLM adapter, versioned prompts and mock outputs
+- [ ] [E] Begin controlled study task/log design, recruitment and consent/ethics preparation
 
-- [ ] Confirm responsibilities for all five members
-- [ ] Review the submitted proposal together
-- [ ] Agree on core data models and OpenAPI endpoints
-- [ ] Decide the model provider, budget, test credentials, and privacy rules
-- [ ] Set up extension and backend development environments
-- [ ] Configure basic lint checks, automated tests, and smoke tests
+## Week 2 — Core MVP
 
-## P1 — Core MVP (priority)
+- [ ] [B] Goal clarification, next-action extraction, four-class interpretation and reasons
+- [ ] [C] Detour/progress CRUD, resumption suggestions and pause/dismiss
+- [ ] [A+B+C] Demo goal → manually supplied context → classification → detour → resumption
+- [ ] [E] Prepare and separate prompt-development and held-out evaluation examples
 
-- [ ] [A] Build React sidebar and page-event integration
-- [ ] [B] Implement goal clarification and confirmed next-step extraction
-- [ ] [B] Implement four-category contextual activity classification with reasons
-- [ ] [C] Save detours (links/notes) and confirmed task progress
-- [ ] [C] Generate concrete task-resumption suggestions
-- [ ] [A+B+C] Demo a full goal → detour → resume flow
+## Week 3 — Delegation and pilot
 
-## P2 — Asynchronous delegation
+- [ ] [D] Editable delegation draft with at most one clarification
+- [ ] [D] In-app background retrieval of at most two public sources; verify citations and unresolved points
+- [ ] [D+A] I immediate, D manual-checkpoint delivery, early view and cancellation
+- [ ] [E/F] G/P/I/D condition switches, event logs and integration checks
+- [ ] [Team] Pilot and major fixes
 
-- [ ] [D] Convert side questions into editable, scoped requests
-- [ ] [D] Implement background retrieval from up to two public sources
-- [ ] [D] Validate source links and supporting evidence
-- [ ] [D] Implement job states, error handling, edits, and cancellation
-- [ ] [D+A] Implement I (immediate delivery) and D (checkpoint delivery), including early viewing
+## Week 4 — Evaluation and submission
 
-## P3 — Evaluation
+- [ ] [E+Team] Evaluate 60 task-context examples (two reviewers) and 40 held-out requests as proposed
+- [ ] [E] Keyword baseline, macro-F1, false-warning rate, output quality, source support, latency and token usage
+- [ ] [Team] Subject to approvals/consent, conduct planned 12–18-person study; honestly report unfinished tasks
+- [ ] [E] Log next meaningful main-task edit, not merely a “return” button, for resumption time
+- [ ] [Team] Demo, tests, analysis and final report
 
-- [ ] [E] Implement G/P/I/D feature flags and consistent event logging
-- [ ] Prepare four comparable browser tasks and counterbalanced condition orders
-- [ ] Prepare 60 task-context examples and have two reviewers check them
-- [ ] Reserve 40 delegation requests excluded from prompt development
-- [ ] Implement a keyword baseline; compute macro-F1 and false-warning rates
-- [ ] Record resumption time, completion, output quality, source support, perceived burden, latency, and token usage
-- [ ] Confirm participant consent and research-ethics requirements; run a pilot
-- [ ] Conduct the planned within-participant study with 12–18 adults
+## Out of MVP scope (decisions, not implemented features)
 
-## P4 — Integration & submission
-
-- [ ] Review PRs and run cross-module integration tests
-- [ ] Document errors, limitations, and unfinished work
-- [ ] Prepare a demo and reproducible run instructions
-- [ ] Write results, discussion, and final report
-- [ ] Verify final submission materials
-
-
-## Claim a workstream
-
-[GitHub Issues: open workstreams](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [English claiming and acceptance guide](docs/WORKSTREAMS.en.md) · [中文说明](docs/WORKSTREAMS.md)
-
-Members may claim modules or subtasks by commenting on an Issue. A maintainer can then assign the owner. Deliverables must satisfy the Issue's acceptance checklist.
+No Electron/React/browser extension, continuous screenshots, automatic reading of arbitrary external apps, keylogging, or multi-platform distribution. User-supplied context; retain G/P/I/D core comparisons.
 
 ## Definition of done
 
-- A task is done only with committed code/docs and a reproducible test or demonstration.
-- Keep prompt-development examples separate from final evaluation items to avoid leakage.
-- Do not change G/P/I/D controls without team agreement.
+Reproducible code/docs, setup steps, happy/error tests, and review by another teammate. [English claiming guide](docs/WORKSTREAMS.en.md) / [中文指南](docs/WORKSTREAMS.md).
