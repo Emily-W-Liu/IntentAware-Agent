@@ -1,21 +1,21 @@
 Language / 语言：[简体中文](CONTRIBUTING.md) | **English**
 
-# Contributing Guide
+# Contributing Guide (Four-week Desktop MVP)
 
-## Working agreement
+- **Claim work:** Comment on [GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues) to claim a module or subtask; maintainers confirm assignees. No one is preassigned. F is shared and may be coordinated by a member with another role.
+- **Contracts first:** Python-first project. Agree on data models, function signatures, SQLite schema, LLM adapter and experiment events; use mock fixtures for parallel development.
+- **Branches:** Branch from `main`: `feature/desktop-ui`, `feature/intent-nlp`, `feature/task-memory`, `feature/delegation`, `feature/evaluation` or `feature/shared-contracts`.
+- **Pull requests:** Document changes, reproducible setup/tests, error handling and contract modifications; request review by another teammate.
+- **Scope approval:** The pivot from extension to manual-context desktop app requires supervisor sign-off; do not silently reduce research controls or study requirements.
+- **Privacy and integrity:** No credentials, identifiable participants, unapproved context or fabricated evaluation outcomes.
 
-- **Shared repository:** `main` is the integration branch; use a separate branch for each change.
-- **Suggested branch names:** `feature/extension-sidebar`, `feature/intent-classifier`, `feature/task-memory`, `feature/delegation-agent`, `feature/experiment-runner`, `fix/<topic>`.
-- **Pull requests:** Describe the purpose, testing steps, UI screenshots (if applicable), and any API changes. Request review by at least one teammate before merging.
-- **API first:** Agree on request/response schemas before implementing dependent modules.
-- **Shared ownership:** A–E are proposed roles, not assigned members. Testing, research experiments, and the report are shared responsibilities.
-- **Privacy:** Keep API keys in local environment variables; do not upload private browsing data, participant identities, or unconsented data.
-- **Research integrity:** Do not fabricate study results, evaluations, citations, or completion claims.
+## PR acceptance checklist
 
-## PR checklist
+- [ ] Scope and affected modules stated
+- [ ] Reproducible setup, happy-path and failure checks
+- [ ] Shared contracts followed or changes coordinated
+- [ ] No secrets/private data
+- [ ] G/P/I/D controls retained where applicable
+- [ ] Reviewed by another teammate
 
-- [ ] Scope and purpose are described
-- [ ] Tests or manual verification steps are provided
-- [ ] No API secrets or private data are committed
-- [ ] Any API or experiment-protocol changes are documented
-- [ ] Another teammate has reviewed
+[Workstream claiming and acceptance guide](docs/WORKSTREAMS.en.md)
