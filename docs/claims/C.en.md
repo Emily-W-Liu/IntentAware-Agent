@@ -1,26 +1,31 @@
-# C — Detour Memory & Task Resumption
+Language / 语言：[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/3) | **English**
 
-[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/3) | **English**
+# C — SQLite Memory & Resumption
+
+> Four-week **PySide6 + Python + SQLite** desktop MVP. Replacing the browser-extension approach from the submitted proposal requires supervisor approval. No role is assigned by default.
 
 ## Scope
-Save approved detours, their purposes, user-confirmed progress, and unfinished steps; offer actionable guidance when the user returns to the main task.
 
-## Implementation guide
-1. Agree with F on Goal, Detour, Progress and ResumeSuggestion schemas.
-2. Implement add/edit/read/delete for saved links, notes and the reason for capturing each item.
-3. Store confirmed progress rather than inferring completion merely from page navigation.
-4. Derive concrete next steps (for example, “write the closing paragraph”) from known state.
-5. Support edit, dismiss, pause, throttled reminders, and cases where exploration is necessary to the goal.
-6. Test empty/error states and behavior after the agreed session restart lifecycle.
+Detour capture and persisted user-confirmed task progress, with concrete resumption advice.
+
+## Implementation guidance
+
+Define SQLite schema and CRUD for links, notes and purposes; store confirmed progress/unfinished steps; implement suggestion, pause and dismiss; handle restart and invalid data.
 
 ## Deliverables
-`services/backend/app/modules/memory/`, persistence adapter, API examples, unit tests, state-transition notes, and privacy explanation.
 
-## Acceptance checklist
-- [ ] Detour create/read/update/delete flows are reproducible.
-- [ ] Progress can be recovered across the agreed session lifecycle.
-- [ ] Resumption suggestions are grounded in confirmed goal, progress and remaining steps.
-- [ ] Pause/dismiss works without interfering with necessary preparation.
-- [ ] Happy path and error tests plus a data-privacy note are included.
+Code and documentation under `src/intentaware/memory/` (planned), with setup steps, mock fixtures and runnable tests. Record dependencies and any limitations.
 
-**Dependencies:** F persistence/API contract, B goal model, A UI. **Branch:** `feature/task-memory`.
+## Acceptance criteria
+
+CRUD and restart behavior demonstrated; suggestions grounded in confirmed data; normal/error tests; no automatic claim that external work was edited.
+
+**Every contribution also requires** a reproducible normal and failure test, compatible shared interfaces, no unapproved data or secrets, and PR review by another member.
+
+## How to claim
+
+Comment on the [corresponding Issue](https://github.com/Ir1svanquish/IntentAware-Agent/issues/3) with your chosen module or subtask, scope, deliverable and dependencies. A maintainer confirms assignment; multiple contributors can split the task.
+
+**Suggested branch:** `feature/task-memory`
+
+[English overview](../WORKSTREAMS.en.md) · [中文总指南](../WORKSTREAMS.md)
