@@ -1,5 +1,5 @@
-# Backend / 后端服务
+语言 / Language：**简体中文** | [English](README.en.md)
 
-**EN:** Planned Python FastAPI service for goal/intent inference, task memory, asynchronous delegation and delivery rules. Not implemented yet.
+# 后端服务
 
-**中文：** 计划使用 Python FastAPI 构建目标/意图分析、任务记忆、异步委托与结果展示控制服务。目前尚未实现。
+计划使用 Python FastAPI 实现目标/意图分析、任务记忆、异步委托及结果展示规则。当前尚未实现。
