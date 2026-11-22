@@ -1,5 +1,5 @@
 语言 / Language：**简体中文** | [English](README.en.md)
 
-# 后端服务
+# 旧版后端服务目录（暂停使用）
 
-计划使用 Python FastAPI 实现目标/意图分析、任务记忆、异步委托及结果展示规则。当前尚未实现。
+四周方案不再要求单独的 FastAPI 后端；核心 NLP、Memory、Delegation 将作为 **Python 本地模块**，与 PySide6 界面通过共享接口配合。此处仅保留旧文档占位；请在 `src/intentaware/` 开发。异步查询不应阻塞 UI，首版只要求应用打开时运行。
