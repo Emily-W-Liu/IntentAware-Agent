@@ -1,5 +1,5 @@
-# Browser Extension / 浏览器扩展
+语言 / Language：**简体中文** | [English](README.en.md)
 
-**EN:** Planned React + TypeScript Chrome side-panel UI, browser event integration and backend client. Not implemented yet.
+# 浏览器扩展
 
-**中文：** 计划使用 React + TypeScript 开发 Chrome 侧边栏、网页事件监听及后端 API 客户端。目前尚未实现。
+计划使用 React + TypeScript 开发 Chrome 侧边栏、网页事件监听和后端 API 客户端。当前尚未实现。
