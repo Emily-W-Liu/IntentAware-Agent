@@ -1,58 +1,59 @@
-# Project TODO / 项目任务清单
+语言 / Language：**简体中文** | [English](TODO.en.md)
 
-**Group 14 · COMP7607 NLP**  
-**Status / 状态:** Initial planning / 初始规划
+# 项目任务清单（TODO）
 
-> Check a box only after the work is actually completed. / 仅在任务真实完成后勾选。
-> **Suggested roles / 建议分工:** A = Extension, B = NLP, C = Memory, D = Delegation, E = Evaluation & Integration. These are **not yet assigned to specific students**. / A–E 尚未分配给具体组员。
+**COMP7607 NLP · 第 14 组**  
+**状态：** 初始规划；仅完成仓库文档及目录骨架。
 
-## P0 — Setup & shared contracts / 环境与接口约定
+> 仅在真正完成并验证后勾选。建议角色：A（浏览器扩展）、B（NLP）、C（任务记忆）、D（异步委托）、E（实验与集成）。**目前尚未分配给具体成员。**
 
-- [ ] Confirm five members' roles and responsibilities / 确定五名组员的职责分工
-- [ ] Review the approved proposal together / 全组核对已提交 Proposal
-- [ ] Agree on core data models and OpenAPI endpoints / 统一核心数据模型与 OpenAPI 接口
-- [ ] Decide LLM provider, budget, test credentials and privacy policy / 确定模型供应商、费用、测试凭据和隐私规则
-- [ ] Set up extension and backend development environments / 建立前端扩展与后端开发环境
-- [ ] Add basic lint/test checks and a smoke-test workflow / 添加基本静态检查、测试与冒烟测试流程
+## P0 — 环境与接口约定
 
-## P1 — Core MVP (priority) / 核心最小可用版本（优先）
+- [ ] 确定五名组员的职责分工
+- [ ] 全组核对已提交的 Proposal
+- [ ] 统一核心数据模型与 OpenAPI 接口
+- [ ] 确定模型供应商、预算、测试凭据和隐私规则
+- [ ] 建立浏览器扩展与后端的开发环境
+- [ ] 配置基本静态检查、自动测试和冒烟测试
 
-- [ ] [A] Build React sidebar and page-event integration / 构建 React 侧边栏与网页事件接入
-- [ ] [B] Implement goal clarification and confirmed next-step extraction / 实现目标澄清与下一步提取
-- [ ] [B] Implement contextual activity classification into four categories with reasons / 实现带理由的四分类活动理解
-- [ ] [C] Save detours (links/notes) and confirmed task progress / 保存分心链接、笔记和已确认进度
-- [ ] [C] Generate concrete task-resumption suggestions / 生成具体任务恢复建议
-- [ ] [A+B+C] Demo a complete goal → detour → resume flow / 演示“目标 → 分心 → 恢复”的完整流程
+## P1 — 核心 MVP（优先）
 
-## P2 — Async delegation / 异步委托
+- [ ] [A] 构建 React 侧边栏与网页事件接入
+- [ ] [B] 实现目标澄清与下一步行动提取
+- [ ] [B] 实现带分类理由的上下文活动四分类器
+- [ ] [C] 保存分心内容（链接、笔记）及已确认任务进度
+- [ ] [C] 生成具体的任务恢复建议
+- [ ] [A+B+C] 完整演示“设定目标 → 分心 → 恢复任务”流程
 
-- [ ] [D] Convert side questions into editable scoped requests / 将支线问题转为可编辑、有明确范围的委托
-- [ ] [D] Run background retrieval from at most two public sources / 后台检索最多两份公开来源
-- [ ] [D] Verify source links and evidence support / 核查引用链接与证据支持
-- [ ] [D] Implement job states, error handling, edit and cancel / 实现任务状态、错误处理、修改与取消
-- [ ] [D+A] Implement immediate delivery (I) and checkpoint-based delivery (D), including early view / 实现立即展示与检查点延迟展示，并支持提前查看
+## P2 — 异步委托
 
-## P3 — Evaluation / 研究评估
+- [ ] [D] 将支线问题整理为范围明确、可编辑的委托请求
+- [ ] [D] 实现后台检索，最多使用两份公开来源
+- [ ] [D] 核查来源链接及答案的证据支持
+- [ ] [D] 实现任务状态、异常处理、修改与取消
+- [ ] [D+A] 实现 I（立即展示）和 D（检查点展示），支持提前查看
 
-- [ ] [E] Implement G/P/I/D feature flags and consistent logging / 实现四组实验条件切换与统一日志
-- [ ] Prepare four comparable browser tasks and counterbalanced orders / 准备四个可比任务与平衡顺序
-- [ ] Prepare 60 activity-context examples and obtain two-reviewer checks / 准备 60 个活动样本并由两名评审核查
-- [ ] Reserve 40 held-out delegation requests, excluded from prompt development / 保留 40 个委托请求，不用于 Prompt 开发
-- [ ] Implement keyword baseline; calculate macro-F1 and false-warning rates / 实现关键词基线并计算 Macro-F1 和误提醒率
-- [ ] Track resumption time, completion, output quality, source support, perceived burden, latency and token usage / 记录恢复时间、完成情况、输出质量、引用支持、感知负担、延迟和 Token 用量
-- [ ] Confirm participant-consent/ethics requirements; run pilot / 核对参与者同意及伦理要求，完成预实验
-- [ ] Conduct planned within-participant study with 12–18 adults / 按计划完成 12–18 人的组内实验
+## P3 — 研究评估
 
-## P4 — Integration & submission / 集成与最终交付
+- [ ] [E] 实现 G/P/I/D 功能开关及统一事件日志
+- [ ] 准备四个可比的浏览器任务并平衡实验顺序
+- [ ] 准备 60 个任务上下文样本，由两名评审进行核查
+- [ ] 保留 40 个未用于 Prompt 开发的委托请求
+- [ ] 实现关键词基线；计算 Macro-F1 和误提醒率
+- [ ] 记录任务恢复时间、完成情况、输出质量、引用支持、感知负担、延迟与 Token 用量
+- [ ] 核对参与者同意与伦理要求；进行预实验
+- [ ] 按 Proposal 完成 12–18 名成年参与者的组内实验
 
-- [ ] Review PRs and test cross-module integration / 审查 PR 并测试跨模块集成
-- [ ] Document limitations, errors and incomplete items / 记录局限、错误与尚未完成事项
-- [ ] Make demo and reproducible run instructions / 准备演示与可复现运行说明
-- [ ] Write results, discussion and final report / 完成结果、讨论与最终报告
-- [ ] Perform final submission checklist / 核对最终提交材料
+## P4 — 集成与最终提交
 
-## Definition of done / 完成标准
+- [ ] 审查 PR 并完成跨模块集成测试
+- [ ] 记录错误、局限性及未完成事项
+- [ ] 准备演示和可复现的运行说明
+- [ ] 完成实验结果、讨论和最终报告
+- [ ] 核对最终提交材料
 
-- An item is done only with committed code/docs and a reproducible check or demonstration. / 只有在代码或文档提交且能够复验后才能标记完成。
-- Keep NLP prompts and evaluation examples separated to avoid leakage. / Prompt 开发与最终评估样本必须隔离，避免数据泄漏。
-- Do not change G/P/I/D control logic without team agreement. / 未经全组讨论，不得改变 G/P/I/D 的实验对照逻辑。
+## 完成标准
+
+- 任务只有在相关代码或文档提交，并有可复验的测试或演示后才能勾选。
+- NLP Prompt 开发样本必须与最终评估样本隔离，避免数据泄漏。
+- 未经全组讨论，不得改变 G/P/I/D 的对照逻辑。
