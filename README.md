@@ -61,6 +61,13 @@ CONTRIBUTING.en.md    # English contribution guide
 3. 遵循 [协作规范](CONTRIBUTING.md)，每项功能在独立分支开发，通过 Pull Request 合并。
 4. **目前仅有项目文档和目录骨架，尚无可运行应用。**
 
+
+## 自由认领工作板块
+
+项目已开放 [六个可认领的 GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues)：A 浏览器扩展、B NLP 目标与分类、C 任务记忆、D 异步委托、E 实验评估、F 共享 API 与集成（由志愿者牵头、全组评审）。**目前均未指派成员**。每个 Issue 包含任务范围、实施步骤、交付物和验收标准。
+
+查看 [中文认领指南](docs/WORKSTREAMS.md) 或 [English claiming guide](docs/WORKSTREAMS.en.md)。选中任务后直接在对应 Issue 评论认领，可单独认领子任务，不必包下整个模块。
+
 ## 隐私与研究规范
 
 不要提交 API 密钥、私密浏览内容、参与者身份信息或未经同意收集的数据；不要伪造实验结果或引用。
