@@ -1,26 +1,31 @@
-# F — Shared API Contracts & Integration
+Language / 语言：[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/6) | **English**
 
-[简体中文（GitHub Issue）](https://github.com/Ir1svanquish/IntentAware-Agent/issues/6) | **English**
+# F — Shared Python Contracts & Integration
+
+> Four-week **PySide6 + Python + SQLite** desktop MVP. Replacing the browser-extension approach from the submitted proposal requires supervisor approval. No role is assigned by default.
 
 ## Scope
-Coordinate shared schemas, development setup and integration. A volunteer can lead, with all five team members reviewing. This is not a sixth compulsory team member.
 
-## Implementation guide
-1. Agree on repository boundaries, Python/Node versions, local startup, and basic CI checks.
-2. Define Goal, ActivityContext, ActivityClassification, Detour, DelegationRequest, DelegationJob, Checkpoint and ExperimentEvent schemas.
-3. Publish `openapi.yaml` or equivalent API documentation with input/output and error examples.
-4. Supply mock JSON fixtures and an integration plan so module owners can work in parallel.
-5. Document branch/PR review expectations and how shared contracts can change.
-6. Integrate the goal → detour → resume MVP before delegation and experiments.
+Cross-cutting volunteer-led work reviewed by all five members, not a sixth required role.
+
+## Implementation guidance
+
+Specify Python environment, typed Goal/ActivityContext/Classification/Detour/Progress/DelegationJob/Checkpoint/ExperimentEvent structures, SQLite and LLM interfaces; mocks; integrate PySide6→NLP→Memory first.
 
 ## Deliverables
-Shared API specification, setup guide, request/response fixtures and minimum integration smoke tests.
 
-## Acceptance checklist
-- [ ] All modules use unambiguous contracts agreed by owners.
-- [ ] Mock frontend calls can exercise the planned main endpoints.
-- [ ] New collaborators can follow the setup guide, with unimplemented steps clearly marked.
-- [ ] Success, invalid-input and error examples are available for core APIs.
-- [ ] Contract changes are reviewed by dependent owners and smoke tests are reproducible.
+Code and documentation under `src/intentaware/contracts/` (planned), with setup steps, mock fixtures and runnable tests. Record dependencies and any limitations.
 
-**Dependencies:** Cross-team agreement before significant parallel implementation. **Branch:** `feature/shared-contracts`.
+## Acceptance criteria
+
+Contracts agreed by dependent owners, reproducible setup and mock integration, happy/error tests, transparent tracking of proposal deviation and unfinished work.
+
+**Every contribution also requires** a reproducible normal and failure test, compatible shared interfaces, no unapproved data or secrets, and PR review by another member.
+
+## How to claim
+
+Comment on the [corresponding Issue](https://github.com/Ir1svanquish/IntentAware-Agent/issues/6) with your chosen module or subtask, scope, deliverable and dependencies. A maintainer confirms assignment; multiple contributors can split the task.
+
+**Suggested branch:** `feature/shared-contracts`
+
+[English overview](../WORKSTREAMS.en.md) · [中文总指南](../WORKSTREAMS.md)
