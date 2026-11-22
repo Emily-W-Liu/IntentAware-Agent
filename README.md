@@ -88,6 +88,11 @@ CONTRIBUTING.md     # 团队协作规范
 
 [查看所有待认领任务](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [详细认领与验收指南](docs/WORKSTREAMS.md) · [开发 TODO](TODO.md) · [协作规范](CONTRIBUTING.md)
 
+
+### 加入开发组
+
+组员可在 [加入申请 Issue #7](https://github.com/Ir1svanquish/IntentAware-Agent/issues/7) 留下 GitHub 用户名和想认领的模块，维护者确认后邀请加入；也可先 Fork 仓库提交 Pull Request。
+
 ## 数据与隐私
 
 仅使用用户主动提供或明确授权的上下文；模型 API 密钥保存在本地环境变量中，实验记录避免包含可识别的个人数据。
