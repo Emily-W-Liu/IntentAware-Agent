@@ -12,4 +12,4 @@ Placeholder structure only; **no runnable application is implemented yet**.
 
 E studies the G/P/I/D conditions under `experiments/` with whole-team support. Agree on common contracts before parallel development. Supervisor approval is needed for deviation from the original browser-extension proposal.
 
-[Home](../../README.en.md) · [Claim work](../../docs/WORKSTREAMS.en.md)
+[Home](../../README.en.md) · [Claim work](../../docs/WORKSTREAMS.md)
