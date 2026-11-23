@@ -84,7 +84,7 @@ CONTRIBUTING.md     # Team workflow
 
 Team members can claim an entire workstream or specific subtasks through GitHub Issues:
 
-**[A Desktop UI](../../issues/1)** · **[B NLP](../../issues/2)** · **[C Task Memory](../../issues/3)** · **[D Delegation](../../issues/4)** · **[E Evaluation](../../issues/5)** · **[F Contracts & Integration](../../issues/6)**
+**[A Desktop UI](https://github.com/Ir1svanquish/IntentAware-Agent/issues/1)** · **[B NLP](https://github.com/Ir1svanquish/IntentAware-Agent/issues/2)** · **[C Task Memory](https://github.com/Ir1svanquish/IntentAware-Agent/issues/3)** · **[D Delegation](https://github.com/Ir1svanquish/IntentAware-Agent/issues/4)** · **[E Evaluation](https://github.com/Ir1svanquish/IntentAware-Agent/issues/5)** · **[F Contracts & Integration](https://github.com/Ir1svanquish/IntentAware-Agent/issues/6)**
 
 [All open tasks](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [Claiming & acceptance guide](docs/WORKSTREAMS.md) · [Development TODO](TODO.en.md) · [Contributing guide](CONTRIBUTING.en.md)
 
