@@ -8,6 +8,7 @@ import pytest
 
 from intentaware.activity.models import ActivitySnapshot, CaptureResult
 from intentaware.activity.monitor import TaskMonitor
+from intentaware.contracts import Goal
 from intentaware.memory.store import SQLiteStore
 from intentaware.session import DesktopSession
 
@@ -69,6 +70,44 @@ def test_initial_task_and_activity_need_no_form_submission(setup_monitor):
     observed = [e for e in session.events if e.name == "activity_observed"]
     assert len(observed) == 1
     assert "train.py" not in json.dumps([e.details for e in session.events])
+
+
+def test_obvious_leisure_waits_for_work_before_creating_the_first_task(setup_monitor):
+    observer = Observer()
+    observer.result = CaptureResult(ActivitySnapshot("chrome.exe", "搞笑合集 - 抖音 - Google Chrome"))
+    session, monitor, _ = setup_monitor(observer=observer)
+    until(session, monitor, lambda: bool(monitor.activity_text))
+
+    assert session.goal is None
+    assert "搞笑合集" in monitor.activity_text
+
+    observer.result = CaptureResult(ActivitySnapshot("Code.exe", "train.py - IntentAware - Visual Studio Code"))
+    until(session, monitor, lambda: session.goal is not None)
+    assert session.goal.title == "继续开发「IntentAware」"
+
+
+def test_corrected_legacy_automatic_task_keeps_its_source_after_reopening(tmp_path):
+    path = tmp_path / "previous.sqlite3"
+    store = SQLiteStore(path)
+    store.save_goal(Goal("继续开发「IntentAware」", "处理 train.py"))
+    store.set_setting("goal_origin", "automatic")
+
+    session = DesktopSession(store)
+    try:
+        session.set_goal("完成训练模块", "用小数据集验证")
+    finally:
+        session.close()
+
+    session = DesktopSession(SQLiteStore(path))
+    monitor = TaskMonitor(session, Observer(), stable_seconds=0, interval_seconds=0)
+    try:
+        until(session, monitor, lambda: monitor.suggestion is not None)
+        assert session.goal.title == "完成训练模块"
+        assert monitor.switch_suggestion is None
+        assert "IntentAware" not in json.dumps([event.details for event in session.events])
+    finally:
+        monitor.close()
+        session.close()
 
 
 def test_stability_filters_brief_window_switches(setup_monitor):

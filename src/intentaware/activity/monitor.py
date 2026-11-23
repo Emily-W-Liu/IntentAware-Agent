@@ -6,7 +6,7 @@ import time
 from concurrent.futures import Future, ThreadPoolExecutor
 from typing import TYPE_CHECKING
 
-from intentaware.activity.models import ActivitySnapshot, CaptureResult, TaskSuggestion
+from intentaware.activity.models import ActivitySnapshot, CaptureResult, TaskSuggestion, task_title_key
 from intentaware.activity.observer import create_observer, is_private_snapshot
 from intentaware.nlp.local import LocalTaskRecognizer
 
@@ -58,6 +58,7 @@ class TaskMonitor:
         self._accepted_key: str | None = None
         self._recorded_key: str | None = None
         self._analyzed_context: tuple | None = None
+        self._dismissed_suggestions: set[tuple[str, str]] = set()
 
     @staticmethod
     def _normalize_apps(names) -> list[str]:
@@ -224,12 +225,32 @@ class TaskMonitor:
         self._analyzed_context = None
         return goal
 
+    @property
+    def switch_suggestion(self) -> TaskSuggestion | None:
+        goal, suggestion = self.session.goal, self.suggestion
+        if goal is None or suggestion is None or not suggestion.title:
+            return None
+        key = task_title_key(suggestion.title)
+        if key in (self.session.goal_inference_key, task_title_key(goal.title)):
+            return None
+        if (goal.id, key) in self._dismissed_suggestions:
+            return None
+        return suggestion
+
+    def dismiss_suggestion(self) -> None:
+        suggestion = self.switch_suggestion
+        goal = self.session.goal
+        if goal and suggestion:
+            self._dismissed_suggestions.add((goal.id, task_title_key(suggestion.title)))
+
     def adopt_suggestion(self):
-        if self.suggestion is None or not self.suggestion.title:
-            raise ValueError("当前窗口的信息不足，请点击修正填写任务。")
-        goal = self.session.start_goal(self.suggestion.title, self.suggestion.next_step, origin="manual")
+        suggestion = self.switch_suggestion
+        if suggestion is None:
+            raise ValueError("当前没有可切换的任务建议。")
+        goal = self.session.start_goal(suggestion.title, suggestion.next_step, origin="manual")
         self.goal_origin = "manual"
         self._analyzed_context = None
+        self._dismissed_suggestions.clear()
         return goal
 
     def set_excluded_apps(self, names) -> None:

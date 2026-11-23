@@ -91,6 +91,11 @@ class LocalTaskRecognizer:
         activity = f"{_OBSERVATION_PREFIX}{snapshot.app_name[:MAX_APP_CHARS]}{_DELIMITER}{snapshot.window_title[:MAX_TITLE_CHARS]}"
         details = _details(snapshot)
         subject = details.subject[:160]
+        if details.category == "浏览" and _LEISURE.search(snapshot.window_title):
+            return TaskSuggestion(
+                "", "", activity, "low", "标题包含休闲或购物线索，暂时仅记录为当前活动。",
+                snapshot.key, details.category,
+            )
         if details.confidence == "low":
             return TaskSuggestion(
                 "", "", activity, "low", "本地规则：应用和窗口标题中的任务线索不足，等待更明确的窗口或你的补充。", snapshot.key,

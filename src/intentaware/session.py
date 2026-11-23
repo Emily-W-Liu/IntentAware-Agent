@@ -9,6 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 from threading import Event
 
+from intentaware.activity.models import task_title_key
 from intentaware.contracts import (
     ActivityContext, ActivityLabel, Checkpoint, Classification, Condition,
     DelegationJob, DelegationResult, Detour, ExperimentEvent, Goal,
@@ -37,6 +38,11 @@ class DesktopSession:
         self.run_id = new_id()
         self.goal = self.store.load_goal()
         self.progress = self.store.load_progress(self.goal.id) if self.goal else None
+        self.goal_inference_key = None
+        if self.goal:
+            self.goal_inference_key = self.store.get_setting("goal_inference_key")
+            if not self.goal_inference_key and self.store.get_setting("goal_origin") == "automatic":
+                self.goal_inference_key = task_title_key(self.goal.title)
         self.jobs: list[DelegationJob] = []
         self._executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="intentaware")
         self._pending: dict[str, tuple[Future, Event]] = {}
@@ -122,12 +128,15 @@ class DesktopSession:
             if self.goal and not new else Goal(title=title.strip(), next_step=next_step.strip())
         )
         progress = Progress(goal_id=goal.id, note=progress_note.strip())
+        inference_key = task_title_key(goal.title) if new or origin == "automatic" else self.goal_inference_key
         with self.store.transaction():
             self.store.save_goal(goal)
             self.store.save_progress(progress)
             self.store.set_setting("goal_origin", origin)
+            self.store.set_setting("goal_inference_key", inference_key)
             self._event("goal_saved", goal_id=goal.id, details={"origin": origin, "new_task": new})
         self.goal, self.progress = goal, progress
+        self.goal_inference_key = inference_key
         self.classification = None
         self.classification_activity = None
         self.analysis_error = None

@@ -7,6 +7,12 @@ import json
 from intentaware.contracts import utc_now
 
 
+def task_title_key(title: str) -> str:
+    """Identify an inferred task across several windows without retaining its old title."""
+    normalized = " ".join(title.split()).casefold()
+    return sha256(normalized.encode("utf-8")).hexdigest()
+
+
 @dataclass(frozen=True)
 class ActivitySnapshot:
     app_name: str

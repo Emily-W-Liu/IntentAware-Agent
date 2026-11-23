@@ -114,6 +114,48 @@ def test_task_switch_requires_the_visible_adoption_action(automatic_window):
     assert not window.suggestion_card.isVisible()
 
 
+def test_corrected_task_does_not_offer_its_original_title_as_a_switch(automatic_window):
+    window, session, monitor = automatic_window
+    previous = session.goal.id
+    window.correction_button.click()
+    window.goal_input.setText("完成研究报告的方法章节")
+    window.save_goal_button.click()
+
+    assert session.goal.id == previous
+    assert not window.suggestion_card.isVisible()
+    observe(window, monitor, "访谈记录.docx - Microsoft Word")
+    assert window.suggestion_card.isVisible()
+    observe(window, monitor, "研究报告.docx - Microsoft Word")
+    assert not window.suggestion_card.isVisible()
+
+
+def test_cancel_correction_restores_the_suggestion_actions(automatic_window):
+    window, _, monitor = automatic_window
+    window.correction_button.click()
+    observe(window, monitor, "访谈记录.docx - Microsoft Word")
+    assert not window.suggestion_card.isVisible()
+
+    window.cancel_correction_button.click()
+
+    assert window.suggestion_card.isVisible()
+    assert window.adopt_suggestion_button.isEnabled()
+
+
+def test_dismissed_suggestion_stays_hidden_for_other_files_in_the_same_project(automatic_window):
+    window, session, monitor = automatic_window
+    original = session.goal
+    observe(window, monitor, "login.py - AccountPortal - Visual Studio Code", app_name="Code.exe")
+    assert window.suggestion_card.isVisible()
+    window.dismiss_suggestion_button.click()
+
+    assert session.goal == original
+    assert not window.suggestion_card.isVisible()
+    observe(window, monitor, "tests.py - AccountPortal - Visual Studio Code", app_name="Code.exe")
+    assert not window.suggestion_card.isVisible()
+    observe(window, monitor, "readme.py - NewProject - Visual Studio Code", app_name="Code.exe")
+    assert window.suggestion_card.isVisible()
+
+
 def test_excluding_current_app_updates_settings_and_clears_activity(automatic_window):
     window, session, monitor = automatic_window
     window.settings_nav.click()

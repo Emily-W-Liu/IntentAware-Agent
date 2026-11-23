@@ -51,7 +51,7 @@ Use the virtual-environment Python path shown above, or activate the environment
 ### What runs today
 
 - A Chinese-language PySide6 workbench that shows the current task, ongoing activity, inference source, and reasons. Task correction and optional manual activity input are available when needed.
-- A first task inferred from a stable, informative foreground window, with four-way activity classification using local rules. Temporary app switches preserve the main task; a new suggestion can be adopted with **切换到此任务** (Switch to this task).
+- A first task inferred from a stable, informative foreground window, with four-way activity classification using local rules. Use **切换到此任务** (Switch to this task) to adopt a suggestion or **暂不切换** (Keep current task) to dismiss it for the current task during this session.
 - Pause, resume, and application exclusions, with settings stored locally. Low-information titles remain uncertain and require correction.
 - SQLite storage for the current goal, confirmed progress, and detours. Those records are available after restarting the app.
 - G/P/I/D feature gates, background delegation with immediate or deferred delivery, early viewing, cancellation, and JSONL export for the current run. Delegation jobs live for the current app session.

@@ -365,8 +365,13 @@ class MainWindow(QMainWindow):
         suggestion_text.addWidget(self.suggestion_title)
         suggestion_text.addWidget(self.suggestion_reason)
         suggestion_row.addLayout(suggestion_text, 1)
+        suggestion_actions = QHBoxLayout()
+        suggestion_actions.setSpacing(8)
+        self.dismiss_suggestion_button = _button("暂不切换", self._dismiss_suggestion, quiet=True)
         self.adopt_suggestion_button = _button("切换到此任务", self._adopt_suggestion, primary=True)
-        suggestion_row.addWidget(self.adopt_suggestion_button, alignment=Qt.AlignmentFlag.AlignVCenter)
+        suggestion_actions.addWidget(self.dismiss_suggestion_button)
+        suggestion_actions.addWidget(self.adopt_suggestion_button)
+        suggestion_row.addLayout(suggestion_actions)
         suggestion.addLayout(suggestion_row)
         layout.addWidget(self.suggestion_card)
 
@@ -636,6 +641,7 @@ class MainWindow(QMainWindow):
         self.task_display.hide()
         self.correction_editor.show()
         self.correction_button.hide()
+        self._refresh_task()
         self.goal_input.setFocus()
         self.goal_input.selectAll()
 
@@ -645,6 +651,8 @@ class MainWindow(QMainWindow):
         self.task_display.show()
         self.correction_button.show()
         self._load_goal()
+        self._refresh_task()
+        self.correction_button.setFocus()
         QTimer.singleShot(0, lambda: self.pages.widget(WORKBENCH).verticalScrollBar().setValue(0))
 
     def _fill_sample(self) -> None:
@@ -707,7 +715,15 @@ class MainWindow(QMainWindow):
                 self._load_goal()
                 self.resume_label.setText(RESUME_HINT)
                 return "已切换到这项任务。"
-            self._perform(adopt)
+            if self._perform(adopt):
+                self.correction_button.setFocus()
+
+    def _dismiss_suggestion(self) -> None:
+        if self.monitor:
+            self.monitor.dismiss_suggestion()
+            self._refresh_task()
+            self.correction_button.setFocus()
+            self._status("已保留当前主任务。")
 
     def _mark_exclusions_dirty(self) -> None:
         self._exclusions_dirty = True
@@ -821,7 +837,7 @@ class MainWindow(QMainWindow):
         self.sample_button.setEnabled(not pending)
         self.save_goal_button.setEnabled(not pending)
         active_jobs = any(job.status in (JobStatus.RUNNING, JobStatus.READY) for job in self.session.jobs)
-        self.adopt_suggestion_button.setEnabled(not pending and not active_jobs and not self._editing_goal)
+        self.adopt_suggestion_button.setEnabled(not pending and not active_jobs)
         self.adopt_suggestion_button.setToolTip("先完成或取消待交付的委托，再切换主任务。" if active_jobs else "")
         activity = self.monitor.activity_text if self.monitor else self.activity_input.toPlainText()
         self.detour_button.setEnabled(memory and has_goal and not pending and bool(activity.strip()))
@@ -856,12 +872,11 @@ class MainWindow(QMainWindow):
         origin = self.monitor.goal_origin if self.monitor else "manual"
         text = {"automatic": "自动识别", "manual": "手动确认", "restored": "已恢复"}.get(origin, "待识别")
         _badge(self.goal_origin_label, text if goal else "等待任务", "accent" if goal else "")
-        suggestion = self.monitor.suggestion if self.monitor else None
-        show_suggestion = bool(goal and suggestion and suggestion.title and suggestion.title != goal.title)
-        self.suggestion_card.setVisible(show_suggestion)
-        if show_suggestion:
+        suggestion = self.monitor.switch_suggestion if self.monitor and not self._editing_goal else None
+        self.suggestion_card.setVisible(suggestion is not None)
+        if suggestion:
             _preview(self.suggestion_title, suggestion.title)
-            _preview(self.suggestion_reason, f"{suggestion.reason} 当前主任务会保留，直到你选择切换。", 200)
+            _preview(self.suggestion_reason, f"建议下一步 · {suggestion.next_step}", 200)
 
     def _refresh_monitor(self) -> None:
         if not self.monitor:
