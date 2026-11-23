@@ -40,6 +40,10 @@ CREATE TABLE IF NOT EXISTS events (
     run_id TEXT NOT NULL,
     payload TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY NOT NULL,
+    value TEXT NOT NULL
+);
 """
 
 
@@ -114,6 +118,19 @@ class SQLiteStore:
     def load_progress(self, goal_id: str) -> Progress | None:
         row = self._db.execute("SELECT * FROM progress WHERE goal_id = ?", (goal_id,)).fetchone()
         return Progress(**row) if row is not None else None
+
+    def get_setting(self, key: str, default=None):
+        row = self._db.execute("SELECT value FROM settings WHERE key = ?", (key,)).fetchone()
+        return json.loads(row["value"]) if row is not None else default
+
+    def set_setting(self, key: str, value) -> None:
+        payload = json.dumps(value, ensure_ascii=False)
+        with self.transaction():
+            self._db.execute(
+                "INSERT INTO settings (key, value) VALUES (?, ?) "
+                "ON CONFLICT (key) DO UPDATE SET value = excluded.value",
+                (key, payload),
+            )
 
     def add_detour(self, detour: Detour) -> None:
         with self.transaction():

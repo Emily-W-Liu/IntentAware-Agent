@@ -2,13 +2,19 @@
 
 # PySide6 桌面应用源码
 
-从仓库根目录安装后，用 `python -m intentaware --demo` 启动中文窗口。默认分类器和委托执行器均为离线演示。目标、进度和偏离记录使用本地 SQLite。委托任务随当前应用会话结束。
+从仓库根目录安装后，用 `python -m intentaware` 打开中文工作台。常规启动观察前台应用和窗口标题，使用本地规则推断任务与分类活动；`--demo` 使用模拟观察，`--manual` 以识别暂停状态启动。委托执行器仍为离线演示。
 
-- A [桌面交互](ui/README.md)在 `ui/window.py`，负责接收输入和显示结果。
-- B [目标与活动分类](nlp/README.md)在 `nlp/demo.py`，实现离线四分类。
-- C [任务记忆](memory/README.md)在 `memory/store.py`，负责 SQLite 存储。
-- D [异步委托](delegation/README.md)在 `delegation/demo.py`，提供离线后台演示。
-- E [研究评估](../../experiments/)使用当前实验轮次的 JSONL 日志。
-- F [接口与集成](contracts/README.md)维护 `contracts/`、`session.py` 和 `__main__.py`，负责共享类型、功能开关和应用装配。
+| 入口 | 作用 |
+| --- | --- |
+| A [桌面交互](ui/README.md) | `ui/window.py` 与 `ui/theme.py`：当前任务、自动活动、人工修正、支线、委托与实验页面。 |
+| B [目标与活动分类](nlp/README.md) | `nlp/local.py`：`LocalTaskRecognizer` 推断候选任务，`LocalActivityClassifier` 提供四分类。`nlp/demo.py` 保留原有演示分类器。 |
+| C [任务记忆](memory/README.md) | `memory/store.py`：SQLite 保存任务、用户确认的进度、支线、事件和观察设置。 |
+| D [异步委托](delegation/README.md) | `delegation/demo.py`：离线后台委托，用于验证完成、交付和取消流程。 |
+| E [研究评估](../../experiments/) | 使用当前 G/P/I/D 轮次的 JSONL 事件，并独立观测有效主任务编辑。 |
+| F [前台观察](activity/README.md)与[共享接口](contracts/README.md) | `activity/` 负责平台适配、稳定采样与任务监视器；`contracts/`、`session.py` 与 `__main__.py` 负责类型、会话与启动装配。 |
+
+观察器在 Windows 使用原生系统接口，在 Linux X11 使用 `xprop`；macOS 和 Wayland 暂不支持自动观察。原始持续窗口标题不写入事件导出，自动生成的任务标题会作为本地任务保存。窗口观察不会自动填写已确认进度。
+
+同一数据目录可恢复任务、进度、支线与暂停/排除设置。委托任务只在当前实验轮次中可操作，重启不恢复正在执行的委托。
 
 [运行、扩展与测试](../../docs/GETTING_STARTED.md) · [项目首页](../../README.md) · [认领任务](../../docs/WORKSTREAMS.md)

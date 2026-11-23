@@ -1,0 +1,169 @@
+"""Explainable local rules for app/title task hints and goal-aware activity.
+
+Window metadata identifies a possible work context, never completed work. The
+separate observation prefix keeps that weaker evidence distinct from explicit
+activity descriptions supplied by the person using the workbench.
+"""
+
+from dataclasses import dataclass
+import ntpath
+import re
+
+from intentaware.activity.models import ActivitySnapshot, TaskSuggestion
+from intentaware.activity.observer import MAX_APP_CHARS, MAX_TITLE_CHARS, is_private_snapshot
+from intentaware.contracts import ActivityContext, ActivityLabel, Classification
+from intentaware.nlp.demo import DemoClassifier
+
+
+_OBSERVATION_PREFIX = "前台窗口："
+_DELIMITER = "｜"
+_SEPARATOR = re.compile(r"\s+[-—–|]\s+")
+_SUFFIX = re.compile(
+    r"\s+[-—–|]\s+(?:Visual Studio Code|Code - Insiders|VSCodium|Cursor|"
+    r"Microsoft Word|Word|WPS Office|LibreOffice Writer|Adobe Acrobat(?: Reader)?|"
+    r"SumatraPDF|Document Viewer|Evince|Okular|Google Chrome|Chromium|"
+    r"Mozilla Firefox|Firefox|Microsoft Edge|Brave|Opera|Vivaldi)(?:\s*\[[^]]*\])?$",
+    re.I,
+)
+_GENERIC = re.compile(
+    r"^(?:untitled(?:[- ]?\d+)?|document\d*|new tab|new window|welcome|settings|"
+    r"home|start page|blank page|visual studio code|google chrome|microsoft edge|"
+    r"mozilla firefox|word|about:blank|google|bing|baidu|百度|document viewer|"
+    r"adobe acrobat(?: reader)?|evince|okular|sumatrapdf|文档\d*|未命名\d*|无标题[- ]?\d*|"
+    r"新标签页|新建标签页|新建窗口|欢迎|设置|主页|首页|空白页)$", re.I,
+)
+_FILE_EXTENSION = re.compile(r"\.[a-z][a-z0-9]{0,9}$", re.I)
+_DOC_EXTENSION = re.compile(r"\.(?:docx?|odt|rtf)$", re.I)
+_STOPWORDS = {
+    "the", "and", "for", "with", "from", "this", "that", "continue", "complete",
+    "develop", "development", "project", "other", "file", "main", "readme",
+    "test", "tests", "code", "visual", "studio", "document", "word", "window",
+    "windows", "write", "writing", "edit", "editing", "read", "reading", "review",
+    "research", "implement", "implementation", "tutorial", "documentation", "docs",
+    "report", "pdf", "doc", "docx", "html", "python", "javascript",
+}
+_CHINESE_STOP = re.compile("继续|完成|当前|目标|下一步|任务|项目|开发|编写|撰写|编辑|修改|处理|实现|阅读|查阅|查找|资料|文档|内容|窗口")
+_LEISURE = re.compile(r"刷短视频|搞笑|抖音|淘宝|京东|购物|打游戏|玩游戏|\b(?:netflix|youtube shorts|funny cats|shopping)\b", re.I)
+
+
+@dataclass(frozen=True)
+class _WindowDetails:
+    category: str = "未知"
+    subject: str = ""
+    filename: str = ""
+    confidence: str = "low"
+
+
+def _meaningful(value: str) -> bool:
+    value = value.strip()
+    return len(value) >= 2 and not _GENERIC.fullmatch(value) and bool(re.search(r"[\w\u3400-\u9fff]", value))
+
+
+def _details(snapshot: ActivitySnapshot) -> _WindowDetails:
+    app = ntpath.basename(snapshot.app_name).casefold().removesuffix(".exe")
+    title = snapshot.window_title.strip()[:MAX_TITLE_CHARS]
+    clean = _SUFFIX.sub("", title).strip().lstrip("●•* ")
+    parts = [part.strip() for part in _SEPARATOR.split(clean) if part.strip()]
+    first = parts[0] if parts else ""
+    if not _meaningful(first):
+        return _WindowDetails()
+    if re.search(r"\.pdf(?:$|\s)", first, re.I) or app in {"acrord32", "acrobat", "sumatrapdf", "evince", "okular", "zathura", "org.gnome.evince"}:
+        subject = re.sub(r"\.pdf$", "", first, flags=re.I).strip()
+        return _WindowDetails("阅读", subject, first, "high") if _meaningful(subject) else _WindowDetails()
+    if app in {"code", "code-oss", "code-insiders", "visual studio code", "vscodium", "cursor"}:
+        filename = first if _FILE_EXTENSION.search(first) else ""
+        project = re.sub(r"\s*\[(?:SSH|WSL|Dev Container)[^]]*\]", "", parts[-1], flags=re.I).strip()
+        if len(parts) > 1 and _meaningful(project):
+            return _WindowDetails("开发", project, filename, "high" if filename else "medium")
+        return _WindowDetails("开发", first, filename, "medium")
+    if app in {"winword", "word", "microsoft word", "wps", "libreoffice writer", "soffice"} or _DOC_EXTENSION.search(first):
+        subject = _DOC_EXTENSION.sub("", first).strip()
+        return _WindowDetails("写作", subject, first, "high") if _meaningful(subject) else _WindowDetails()
+    if app in {"chrome", "google-chrome", "google chrome", "chromium", "chromium-browser", "msedge", "microsoft edge", "firefox", "firefox-esr", "brave", "brave-browser", "opera", "vivaldi"}:
+        return _WindowDetails("浏览", first, confidence="medium")
+    return _WindowDetails()
+
+
+class LocalTaskRecognizer:
+    def infer(self, snapshot: ActivitySnapshot) -> TaskSuggestion:
+        if is_private_snapshot(snapshot):
+            return TaskSuggestion("", "", "", "low", "隐私窗口已排除。", snapshot.key)
+        activity = f"{_OBSERVATION_PREFIX}{snapshot.app_name[:MAX_APP_CHARS]}{_DELIMITER}{snapshot.window_title[:MAX_TITLE_CHARS]}"
+        details = _details(snapshot)
+        subject = details.subject[:160]
+        if details.confidence == "low":
+            return TaskSuggestion(
+                "", "", activity, "low", "本地规则：应用和窗口标题中的任务线索不足，等待更明确的窗口或你的补充。", snapshot.key,
+            )
+        if details.category == "开发":
+            title = f"继续开发「{subject}」"
+            next_step = f"确认 {details.filename or subject} 的修改目标，并继续处理"
+        elif details.category == "写作":
+            title = f"撰写「{subject}」"
+            next_step = f"确认「{subject}」要完善的段落，并继续编辑"
+        elif details.category == "阅读":
+            title = f"阅读「{subject}」"
+            next_step = f"阅读「{subject}」并记下当前需要的要点"
+        else:
+            title = f"查阅「{subject}」"
+            next_step = "明确当前页面要解决的问题，并记录有用的信息"
+        return TaskSuggestion(
+            title, next_step, activity, details.confidence,
+            f"本地规则：根据前台应用与窗口标题识别为{details.category}上下文；未读取内容，任务可随时修正。",
+            snapshot.key, details.category,
+        )
+
+
+def _tokens(value: str) -> set[str]:
+    value = value.casefold()
+    tokens = {word for word in re.findall(r"[a-z][a-z0-9_]{2,}", value) if word not in _STOPWORDS}
+    for run in re.findall(r"[\u3400-\u9fff]+", _CHINESE_STOP.sub(" ", value)):
+        tokens.update(run[index:index + 2] for index in range(len(run) - 1))
+    return tokens
+
+
+def _related(goal_text: str, details: _WindowDetails) -> bool:
+    if details.filename and len(details.filename) >= 4 and details.filename.casefold() in goal_text.casefold():
+        return True
+    return bool(_tokens(goal_text) & _tokens(f"{details.subject} {details.filename}"))
+
+
+class LocalActivityClassifier:
+    def classify(self, context: ActivityContext) -> Classification:
+        activity = context.activity.strip()
+        if not activity.startswith(_OBSERVATION_PREFIX):
+            # Keep established explicit, user-entered activity semantics. Those
+            # assertions are stronger evidence than merely opening an editor.
+            result = DemoClassifier().classify(context)
+            return Classification(result.label, result.reason.replace("规则演示：", "本地规则：", 1), result.suggested_next_step)
+        fields = activity[len(_OBSERVATION_PREFIX):].split(_DELIMITER, 1)
+        snapshot = ActivitySnapshot(fields[0], fields[1] if len(fields) > 1 else "")
+        details = _details(snapshot)
+        next_step = context.goal.next_step.strip()
+        suggestion = f"对照当前下一步：{next_step}" if next_step else "补充一个具体的下一步，帮助判断活动与目标的关系。"
+        related = _related(f"{context.goal.title} {next_step}", details)
+        if related and details.confidence != "low":
+            if details.category in {"开发", "写作"}:
+                return Classification(
+                    ActivityLabel.DIRECT_PROGRESS,
+                    "本地规则：窗口中的项目或文件与当前目标相符，可能正在处理主线；未验证修改或实际进度。",
+                    suggestion,
+                )
+            if re.search(r"阅读|审阅|通读|\b(?:read|reading|review)\b", next_step, re.I) and _related(next_step, details):
+                return Classification(
+                    ActivityLabel.DIRECT_PROGRESS,
+                    "本地规则：窗口主题与设定的阅读下一步相符；未验证阅读进度。", suggestion,
+                )
+            return Classification(
+                ActivityLabel.NECESSARY_PREPARATION,
+                "本地规则：页面或文档主题与当前目标相符，可能是在查阅所需资料；未验证具体用途。", suggestion,
+            )
+        if details.category == "浏览" and _LEISURE.search(snapshot.window_title):
+            return Classification(
+                ActivityLabel.OPTIONAL_EXPLORATION,
+                "本地规则：标题含休闲或购物线索，未找到与当前目标的明确关联，可能是可稍后处理的支线。", suggestion,
+            )
+        return Classification(
+            ActivityLabel.UNCLEAR,
+            "本地规则：仅凭当前应用与窗口标题，无法确定这项活动如何帮助主目标；你可以补充或修正。", suggestion,
+        )

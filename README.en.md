@@ -4,6 +4,8 @@ Language / 语言：[简体中文](README.md) | **English**
 
 **HKU COMP7607 · Natural Language Processing · Group 14**
 
+A desktop task workbench that uses the foreground application and window title to infer your current task and activity. Review the result and correct it when needed. Recognition runs locally and does not read page or document contents.
+
 ## Quick start
 
 Python 3.11 or newer is required. Run these commands from the repository root.
@@ -13,27 +15,47 @@ Python 3.11 or newer is required. Run these commands from the repository root.
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\python -m pip install -e ".[dev]"
-.\.venv\Scripts\python -m intentaware --demo
+.\.venv\Scripts\python -m intentaware
 ```
 
-After installing Python, you can also double-click [start.bat](start.bat). The first launch downloads dependencies. Later launches can run offline.
+After installing Python, you can also double-click [start.bat](start.bat) to start automatic recognition. The first launch downloads dependencies. Later launches can run offline.
 
 **macOS / Linux**
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e ".[dev]"
-.venv/bin/python -m intentaware --demo
+.venv/bin/python -m intentaware
 ```
 
-The app opens in condition D by default. Load the sample inputs in the window, save the goal, then classify an activity or submit a delegation request. [Six-step demo, module ownership, and tests (Chinese)](docs/GETTING_STARTED.md)
+After launching, switch to VS Code, Word, or a browser window with a descriptive page title, stay there for a few seconds, and return to the workbench. When no task is saved and the title provides enough information, the app fills in the current task. Activity and classification update as windows change, without repeated typing. An existing task is preserved; use **修正** (Correct) when information is missing or the inference needs adjustment. The default study condition is D.
+
+[Operation, module integration, and tests (Chinese)](docs/GETTING_STARTED.md)
+
+### Platforms and launch modes
+
+| Environment | Automatic recognition |
+| --- | --- |
+| Windows | Reads the foreground app and window title through native system APIs |
+| Linux X11 | Requires an available graphical session and the `xprop` command |
+| macOS / Linux Wayland | Currently unsupported; the app explains the limitation and allows manual task and activity input |
+
+| Command | Behavior |
+| --- | --- |
+| `python -m intentaware` | Automatic recognition; saved pause and excluded-app settings remain in effect |
+| `python -m intentaware --demo` | Clearly labeled simulated observations; defaults to a separate `demo` data subdirectory |
+| `python -m intentaware --manual` | Starts with recognition paused; it can be enabled from the UI |
+
+Use the virtual-environment Python path shown above, or activate the environment first.
 
 ### What runs today
 
-- A Chinese-language PySide6 desktop app that uses offline rules to classify user-supplied context into four activity categories and show a reason and suggested next step.
+- A Chinese-language PySide6 workbench that shows the current task, ongoing activity, inference source, and reasons. Task correction and optional manual activity input are available when needed.
+- A first task inferred from a stable, informative foreground window, with four-way activity classification using local rules. Temporary app switches preserve the main task; a new suggestion can be adopted with **切换到此任务** (Switch to this task).
+- Pause, resume, and application exclusions, with settings stored locally. Low-information titles remain uncertain and require correction.
 - SQLite storage for the current goal, confirmed progress, and detours. Those records are available after restarting the app.
 - G/P/I/D feature gates, background delegation with immediate or deferred delivery, early viewing, cancellation, and JSONL export for the current run. Delegation jobs live for the current app session.
-- Classification and delegation use offline demo providers and require no runtime network access or API keys. LLM integration and live retrieval are follow-up work. This starter supports workflow checks and event collection for the planned evaluation.
+- Task inference and classification use local title and keyword rules; delegation still returns offline demonstration results. No runtime network access or API keys are required. LLM integration, live retrieval, and research evaluation remain future work.
 
 ### Desktop preview
 
@@ -41,17 +63,19 @@ The app opens in condition D by default. Load the sample inputs in the window, s
 
 ## Overview
 
-**IntentAware-Agent** is a desktop AI task companion for studying, writing, and coding. It interprets side activities in the context of a user's primary goal, captures useful detours and progress, and helps users resume work after interruptions. Users can delegate non-urgent questions to a background agent and choose when to view the results.
+**IntentAware-Agent** is a desktop task companion for studying, writing, and coding. The current version uses foreground application and title metadata to classify activities in relation to the main goal, while preserving detours and user-confirmed progress. Planned LLM and public-source retrieval integrations will improve goal understanding, resumption, and delegation of non-urgent questions. The current delegator supports offline checks of background execution and delivery.
 
 ### Typical workflow
 
-1. **Set a goal:** Enter the current task and next action, such as “Finish the Related Work section of my paper.”
-2. **Provide context:** Describe the current activity, ask a side question, or paste text for analysis.
-3. **Interpret activity:** The agent classifies it as direct progress, necessary preparation, optional exploration, or unclear, with an explanation.
-4. **Capture or delegate:** Save detours or send a side question to the background agent.
-5. **Resume work:** Get an actionable next step based on confirmed progress; view delegated answers immediately or at a task checkpoint.
+1. **Start working:** Launch the app and continue in an editor or browser. A stable, informative window title can establish the first task.
+2. **Review and correct:** Check the displayed source. Use **修正** (Correct) to edit the task and next step. Human corrections are preserved.
+3. **Follow your activity:** The workbench updates the activity, classification, and reason automatically. A window change never confirms progress.
+4. **Handle new tasks and detours:** Adopt a suggestion when you want to change the main task. Save a detour, or use offline delegation to try the background and delivery workflow.
+5. **Resume work:** Continue from your confirmed progress and next step. The sidebar also provides recognition controls, exclusions, and experiment records.
 
 ## Module goals
+
+This table includes planned capabilities. See “What runs today” above for the implemented scope.
 
 | Module | Responsibilities |
 | --- | --- |
@@ -66,13 +90,14 @@ The app opens in condition D by default. Load the sample inputs in the window, s
 | Component | Technology |
 | --- | --- |
 | Desktop GUI | **Python + PySide6** |
-| NLP inference | Offline classifier with an interface for an LLM adapter |
+| Foreground observation | Native Windows APIs / Linux X11 `xprop` |
+| NLP inference | Local task-inference and classification rules, with an interface for an LLM adapter |
 | Local persistence | SQLite |
 | Background processing | Python worker / thread |
 | Experiment analysis (planned) | pandas + scikit-learn |
 | Automated tests | pytest |
 
-The application uses modular Python components. Users provide the context they want analyzed, while task state is stored locally. The UI runs classification and delegation in the background and applies their results on the main thread.
+The application uses modular Python components. Foreground observations are sampled in the background; the task monitor passes stable observations to local recognition and classification. Users can correct or supplement the result. Task state, confirmed progress, and preferences stay local, while background results are applied on the main thread.
 
 ## Research and evaluation
 
@@ -102,8 +127,9 @@ Key measures include macro-F1 and false-warning rates for activity classificatio
 
 ```text
 src/intentaware/
-├── ui/             # Desktop interface
-├── nlp/            # Goal understanding and activity classification
+├── ui/             # Chinese desktop workbench
+├── activity/       # Foreground observation, stability sampling, and task monitor
+├── nlp/            # Local task inference and activity classification
 ├── memory/         # Progress, detours, and resumption
 ├── delegation/     # Offline delegation provider
 ├── contracts/      # Shared schemas and interfaces
@@ -132,4 +158,8 @@ Group members can comment with their GitHub handle and preferred module in [Join
 
 ## Data and privacy
 
-The app uses context supplied by the user and stores data in local SQLite. Keep identifiable personal data out of study records. When adding a model provider, read API keys from local environment variables.
+Automatic recognition uses only the foreground application name and window title. It does not capture screenshots, keystrokes, or clipboard data; it does not read page, file, or document contents or upload observations to the cloud. It skips its own window and private windows or password managers covered by its rules. Add excluded applications in **设置** (Settings), or pause recognition at any time.
+
+Tasks, confirmed progress, detours, and preferences are stored in local SQLite. Automatically seeded and user-edited task titles are saved and may include file or page names. Raw ongoing window titles are not appended to event exports. Review exported records for sensitive information that you explicitly saved. See the [setup guide (Chinese)](docs/GETTING_STARTED.md#本地数据与测试) for data locations and overrides.
+
+Title-based rules provide limited evidence. A classification does not establish that editing occurred or progress was made. Meaningful main-task edits still require separate observation in the study. When adding a model provider, read API keys from local environment variables and explicitly define the data sent to that provider.

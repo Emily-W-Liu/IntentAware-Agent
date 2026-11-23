@@ -17,7 +17,7 @@ from intentaware.contracts import (
 from intentaware.contracts.interfaces import Classifier, Delegator
 from intentaware.delegation.demo import DemoDelegator
 from intentaware.memory.store import SQLiteStore
-from intentaware.nlp.demo import DemoClassifier
+from intentaware.nlp.local import LocalActivityClassifier
 
 
 class DesktopSession:
@@ -31,7 +31,7 @@ class DesktopSession:
         condition: Condition = Condition.D,
     ):
         self.store = store
-        self.classifier = classifier if classifier is not None else DemoClassifier()
+        self.classifier = classifier if classifier is not None else LocalActivityClassifier()
         self.delegator = delegator if delegator is not None else DemoDelegator()
         self.condition = Condition(condition)
         self.run_id = new_id()
@@ -41,10 +41,15 @@ class DesktopSession:
         self._executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="intentaware")
         self._pending: dict[str, tuple[Future, Event]] = {}
         self._analysis_future: Future | None = None
+        self._analysis_activity: str | None = None
         self.classification: Classification | None = None
+        self.classification_activity: str | None = None
         self.analysis_error: str | None = None
         self._closed = False
-        self._event("session_started", details={"mode": "offline_demo"})
+        self._event("session_started", details=self._provider_details())
+
+    def _provider_details(self) -> dict:
+        return {"classifier": type(self.classifier).__name__, "delegator": type(self.delegator).__name__}
 
     @property
     def memory_enabled(self) -> bool:
@@ -73,7 +78,7 @@ class DesktopSession:
     def _require_goal(self) -> Goal:
         self._require_open()
         if self.goal is None:
-            raise ValueError("请先填写并保存当前目标。")
+            raise ValueError("正在等待自动识别任务，也可点击“修正”设置当前任务。")
         return self.goal
 
     def _event(
@@ -90,22 +95,44 @@ class DesktopSession:
             details=details or {},
         ))
 
-    def set_goal(self, title: str, next_step: str, progress_note: str = "") -> Goal:
+    def record_event(self, name: str, details: dict | None = None) -> None:
+        """Record non-content metadata on the owning/main thread."""
+        self._require_open()
+        self._event(name, details=details)
+
+    def set_goal(self, title: str, next_step: str, progress_note: str = "", *, origin: str = "manual") -> Goal:
+        return self._write_goal(title, next_step, progress_note, origin=origin, new=False)
+
+    def start_goal(self, title: str, next_step: str, *, origin: str = "automatic") -> Goal:
+        """Begin a distinct task without relabelling its predecessor's saved detours."""
+        if any(job.status in (JobStatus.RUNNING, JobStatus.READY) for job in self.jobs):
+            raise ValueError("请先查看或取消当前任务的委托，再切换到新任务。")
+        return self._write_goal(title, next_step, "", origin=origin, new=True)
+
+    def _write_goal(self, title: str, next_step: str, progress_note: str, *, origin: str, new: bool) -> Goal:
         self._require_open()
         if self.analysis_pending:
             raise ValueError("正在分析当前活动，请等待分析完成后再更新目标。")
         if not title.strip():
             raise ValueError("目标不能为空，请写下这次要完成的任务。")
+        if origin not in ("manual", "automatic"):
+            raise ValueError("任务来源无效。")
         goal = (
             replace(self.goal, title=title.strip(), next_step=next_step.strip())
-            if self.goal else Goal(title=title.strip(), next_step=next_step.strip())
+            if self.goal and not new else Goal(title=title.strip(), next_step=next_step.strip())
         )
         progress = Progress(goal_id=goal.id, note=progress_note.strip())
         with self.store.transaction():
             self.store.save_goal(goal)
             self.store.save_progress(progress)
-            self._event("goal_saved", goal_id=goal.id)
+            self.store.set_setting("goal_origin", origin)
+            self._event("goal_saved", goal_id=goal.id, details={"origin": origin, "new_task": new})
         self.goal, self.progress = goal, progress
+        self.classification = None
+        self.classification_activity = None
+        self.analysis_error = None
+        if new:
+            self.jobs.clear()
         return goal
 
     def set_condition(self, condition: Condition) -> None:
@@ -120,11 +147,12 @@ class DesktopSession:
         run_id = new_id()
         with self.store.transaction():
             self._event("session_ended", details={"reason": "condition_changed"})
-            self._event("session_started", details={"mode": "offline_demo"}, run_id=run_id, condition=condition)
+            self._event("session_started", details=self._provider_details(), run_id=run_id, condition=condition)
         self.condition = condition
         self.run_id = run_id
         self.jobs.clear()
         self.classification = None
+        self.classification_activity = None
         self.analysis_error = None
 
     def _activity_context(self, activity: str) -> ActivityContext:
@@ -143,15 +171,17 @@ class DesktopSession:
             raise ValueError("分类模块返回了不符合约定的数据。")
         return result
 
-    def _record_classification(self, result: Classification) -> Classification:
+    def _record_classification(self, result: Classification, activity: str) -> Classification:
         self._validate_classification(result)
-        self._event("activity_classified", details={"label": result.label.value, "mode": "offline_demo"})
+        self._event("activity_classified", details={"label": result.label.value, "classifier": type(self.classifier).__name__})
         self.classification = result
+        self.classification_activity = activity
         return result
 
     def analyze(self, activity: str) -> Classification:
         """Synchronous helper for scripts. The desktop uses start_analysis()."""
-        return self._record_classification(self.classifier.classify(self._activity_context(activity)))
+        context = self._activity_context(activity)
+        return self._record_classification(self.classifier.classify(context), context.activity)
 
     def start_analysis(self, activity: str) -> None:
         context = self._activity_context(activity)
@@ -160,8 +190,21 @@ class DesktopSession:
         self._event("analysis_requested")
         future = self._executor.submit(self.classifier.classify, context)
         self.classification = None
+        self.classification_activity = None
         self.analysis_error = None
         self._analysis_future = future
+        self._analysis_activity = context.activity
+
+    def cancel_analysis(self) -> None:
+        """Discard a stale result; a running provider may finish but cannot apply it."""
+        self._require_open()
+        if self._analysis_future is not None:
+            self._analysis_future.cancel()
+        self._analysis_future = None
+        self._analysis_activity = None
+        self.classification = None
+        self.classification_activity = None
+        self.analysis_error = None
 
     def add_detour(self, text: str) -> Detour:
         goal = self._require_goal()
@@ -223,10 +266,11 @@ class DesktopSession:
                 self._event("analysis_failed", details={"error_type": type(exc).__name__})
                 self.analysis_error = str(exc) or type(exc).__name__
             else:
-                self._record_classification(result)
+                self._record_classification(result, self._analysis_activity or "")
                 self.analysis_error = None
             # Keep the completed future available if a storage write raised.
             self._analysis_future = None
+            self._analysis_activity = None
             changed = True
         for job_id, (future, cancel) in list(self._pending.items()):
             if not future.done():
