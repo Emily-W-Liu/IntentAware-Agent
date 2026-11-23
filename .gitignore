@@ -236,3 +236,8 @@ coverage/
 *.sqlite3
 *.db
 experiments/private_data/
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+events-*.jsonl
+intentaware-events*.jsonl

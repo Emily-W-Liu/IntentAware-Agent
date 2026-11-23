@@ -4,6 +4,41 @@
 
 **HKU COMP7607 · Natural Language Processing · Group 14**
 
+## 快速开始
+
+需要 Python 3.11 或更新版本。在仓库根目录运行以下命令。
+
+**Windows（PowerShell）**
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\python -m pip install -e ".[dev]"
+.\.venv\Scripts\python -m intentaware --demo
+```
+
+安装 Python 后，也可双击 [start.bat](start.bat) 启动。首次安装依赖需联网，之后可离线运行。
+
+**macOS / Linux**
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e ".[dev]"
+.venv/bin/python -m intentaware --demo
+```
+
+应用默认以 D 条件启动。在窗口内填入示例、保存目标，然后分析当前活动或提交委托。[六步演示、模块分工与测试方法](docs/GETTING_STARTED.md)
+
+### 当前可用
+
+- 中文 PySide6 桌面窗口，根据目标和手动输入的上下文，用离线规则判断活动属于哪一类，并显示理由和建议下一步。
+- 目标、已确认进度和偏离记录写入本地 SQLite。重新打开应用后，可以继续当前目标。
+- G/P/I/D 功能开关，后台委托、立即或延迟展示、提前查看和取消，以及当前实验轮次事件的 JSONL 导出。委托任务随本次应用会话结束。
+- 分类和委托使用离线演示模块，运行时无需网络或 API 密钥。LLM 接入与真实检索属于后续模块任务，当前版本可用于验证流程和采集后续评估所需的事件。
+
+### 桌面界面
+
+![IntentAware 桌面工作台实际运行截图](docs/images/desktop-starter.png)
+
 ## 项目简介
 
 **IntentAware-Agent** 是一款面向学习、写作与编程场景的桌面 AI 任务助手。它根据用户的主要目标和当前活动上下文，判断支线活动是否有助于完成任务，保存临时想法与进度，并帮助用户在中断后继续工作。对于可以稍后处理的问题，用户可以委托 Agent 异步检索，并选择合适的时间查看结果。
@@ -16,7 +51,7 @@
 4. **记录与委托：** 保存分心内容或把支线问题交给 Agent 在后台处理。
 5. **恢复任务：** 根据已确认的进度获得具体的继续操作建议；委托结果可立即查看或留到任务检查点展示。
 
-## 核心功能
+## 模块目标
 
 | 模块 | 功能 |
 | --- | --- |
@@ -31,13 +66,13 @@
 | 组件 | 技术 |
 | --- | --- |
 | 桌面界面 | **Python + PySide6** |
-| NLP 推理 | 可替换的预训练 LLM API |
+| NLP 推理 | 当前为离线规则分类，预留 LLM 接口 |
 | 本地数据 | SQLite |
 | 异步处理 | Python 后台 Worker / 线程 |
-| 实验分析 | pandas + scikit-learn |
+| 实验分析（计划） | pandas + scikit-learn |
 | 自动化测试 | pytest |
 
-应用采用 Python 模块化结构。用户主动提供需要分析的上下文，任务和进度保存在本地数据库；耗时的检索任务在后台执行，避免阻塞桌面界面。
+应用采用 Python 模块化结构。用户主动提供需要分析的上下文，任务和进度保存在本地数据库；界面在后台运行分类和委托，并在主线程接收结果。
 
 ## 研究与实验
 
@@ -70,8 +105,10 @@ src/intentaware/
 ├── ui/             # 桌面界面
 ├── nlp/            # 目标理解与活动分类
 ├── memory/         # 任务进度、分心记录与恢复
-├── delegation/     # 异步委托与结果交付
-└── contracts/      # 共享数据结构与接口
+├── delegation/     # 离线委托实现
+├── contracts/      # 共享数据结构与接口
+├── session.py      # 功能开关、后台协调与交付
+└── __main__.py     # 命令行入口
 
 experiments/        # 实验任务、日志与分析
 tests/              # 自动化测试
@@ -95,4 +132,4 @@ CONTRIBUTING.md     # 团队协作规范
 
 ## 数据与隐私
 
-仅使用用户主动提供或明确授权的上下文；模型 API 密钥保存在本地环境变量中，实验记录避免包含可识别的个人数据。
+应用使用用户主动输入的上下文，数据写入本地 SQLite。实验记录应避免包含可识别的个人数据。接入模型时，请通过本地环境变量提供 API 密钥。
