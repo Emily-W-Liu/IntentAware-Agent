@@ -65,6 +65,12 @@ Use the virtual-environment Python path shown above, or activate the environment
 
 **IntentAware-Agent** is a desktop task companion for studying, writing, and coding. The current version uses foreground application and title metadata to classify activities in relation to the main goal, while preserving detours and user-confirmed progress. Planned LLM and public-source retrieval integrations will improve goal understanding, resumption, and delegation of non-urgent questions. The current delegator supports offline checks of background execution and delivery.
 
+### Project proposal
+
+[Read the course proposal (PDF)](docs/group14-project-proposal.pdf)
+
+The original proposal describes a browser extension. The current implementation is a standalone Python and PySide6 desktop app that infers tasks from the foreground application and window title.
+
 ### Typical workflow
 
 1. **Start working:** Launch the app and continue in an editor or browser. A stable, informative window title can establish the first task.
