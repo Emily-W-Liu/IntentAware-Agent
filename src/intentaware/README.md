@@ -1,15 +1,14 @@
 语言 / Language：**简体中文** | [English](README.en.md)
 
-# PySide6 桌面应用（计划目录）
+# PySide6 桌面应用源码
 
-这是四周简化版的 Python 模块占位结构，**目前没有可运行源码**。建议由五人并行负责：
+从仓库根目录安装后，用 `python -m intentaware --demo` 启动中文窗口。默认分类器和委托执行器均为离线演示。目标、进度和偏离记录使用本地 SQLite。委托任务随当前应用会话结束。
 
-- `ui/` — A：PySide6 输入/展示与检查点 UI
-- `nlp/` — B：LLM 目标澄清、上下文分类
-- `memory/` — C：SQLite 任务与分心记录/恢复
-- `delegation/` — D：Python 后台检索、引用核验、延迟投递
-- `contracts/` — F：共享 Python 数据模型、接口与 Mock
+- A [桌面交互](ui/README.md)在 `ui/window.py`，负责接收输入和显示结果。
+- B [目标与活动分类](nlp/README.md)在 `nlp/demo.py`，实现离线四分类。
+- C [任务记忆](memory/README.md)在 `memory/store.py`，负责 SQLite 存储。
+- D [异步委托](delegation/README.md)在 `delegation/demo.py`，提供离线后台演示。
+- E [研究评估](../../experiments/)使用当前实验轮次的 JSONL 日志。
+- F [接口与集成](contracts/README.md)维护 `contracts/`、`session.py` 和 `__main__.py`，负责共享类型、功能开关和应用装配。
 
-E 的 G/P/I/D 实验、标注和分析放在 `experiments/`，全组协作。建议先由 F 确定类型和函数输入输出。此路线偏离原浏览器扩展 Proposal，须导师确认。
-
-[项目首页](../../README.md) · [认领任务](../../docs/WORKSTREAMS.md)
+[运行、扩展与测试](../../docs/GETTING_STARTED.md) · [项目首页](../../README.md) · [认领任务](../../docs/WORKSTREAMS.md)

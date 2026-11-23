@@ -2,16 +2,16 @@
 
 # 四周冲刺任务清单
 
-> **桌面版本方案待导师确认**；未勾选条目不代表已完成。具体模块可在 [GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues) 认领。
+> 当前已提供可运行的离线桌面框架；真实 NLP、检索和研究评估仍需继续开发。具体模块可在 [GitHub Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues) 认领。
 
 ## 第 1 周 — 核心基础与提前准备实验
 
-- [ ] [全组] 向导师确认从浏览器扩展/自动网页行为判断改为桌面应用/手动上下文输入是否符合 Proposal
 - [ ] [全组] 确定五人分工及 F 共享接口协调人（允许兼任）
-- [ ] [F] 定义 Goal、Activity、Detour、DelegationJob、Checkpoint、ExperimentEvent 数据协议
-- [ ] [A] 建立 PySide6 可运行窗口，支持目标/上下文输入
-- [ ] [C/F] 建立 SQLite 存储接口
-- [ ] [B] 建立可替换的 LLM API Adapter、Prompt 配置及 Mock 结果
+- [x] [F] 定义 Goal、ActivityContext、Classification、Progress、Detour、DelegationJob、Checkpoint、ExperimentEvent 数据结构
+- [x] [A/F] 建立 PySide6 可运行窗口，支持目标、进度与上下文输入
+- [x] [C/F] 建立 SQLite 存储接口，保存目标、进度、偏离记录和事件
+- [x] [F] 提供可替换的分类/委托接口与离线演示实现
+- [ ] [B] 接入真实 LLM API 与 Prompt 配置
 - [ ] [E] 开始设计对照实验任务、事件日志、受试者招募和同意/伦理流程
 
 ## 第 2 周 — Core MVP
@@ -37,9 +37,12 @@
 - [ ] [E] 正确记录下一次有意义的主任务编辑；不得用“返回”按钮替代恢复时间终点
 - [ ] [全组] Demo、测试、结果分析、最终报告
 
-## MVP 范围边界（决策，不代表已实现）
+## 当前框架入口
 
-不做 Electron/React/浏览器扩展，不持续截图/读取全部外部应用文本/记录按键，不做多平台正式适配。用户主动提供上下文。保留原 G/P/I/D 研究核心对照。
+- [启动与接入指南](docs/GETTING_STARTED.md)：安装、操作演示、模块替换和测试。
+- `src/intentaware/session.py`：连接界面、NLP、存储和后台委托。
+- 当前分类为关键词规则演示，委托返回离线示例；研究评估需在接入真实模块后开展。
+- 用户主动提供上下文；保留 G/P/I/D 功能条件。
 
 ## 统一验收
 

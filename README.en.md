@@ -4,6 +4,41 @@ Language / 语言：[简体中文](README.md) | **English**
 
 **HKU COMP7607 · Natural Language Processing · Group 14**
 
+## Quick start
+
+Python 3.11 or newer is required. Run these commands from the repository root.
+
+**Windows (PowerShell)**
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\python -m pip install -e ".[dev]"
+.\.venv\Scripts\python -m intentaware --demo
+```
+
+After installing Python, you can also double-click [start.bat](start.bat). The first launch downloads dependencies. Later launches can run offline.
+
+**macOS / Linux**
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e ".[dev]"
+.venv/bin/python -m intentaware --demo
+```
+
+The app opens in condition D by default. Load the sample inputs in the window, save the goal, then classify an activity or submit a delegation request. [Six-step demo, module ownership, and tests (Chinese)](docs/GETTING_STARTED.md)
+
+### What runs today
+
+- A Chinese-language PySide6 desktop app that uses offline rules to classify user-supplied context into four activity categories and show a reason and suggested next step.
+- SQLite storage for the current goal, confirmed progress, and detours. Those records are available after restarting the app.
+- G/P/I/D feature gates, background delegation with immediate or deferred delivery, early viewing, cancellation, and JSONL export for the current run. Delegation jobs live for the current app session.
+- Classification and delegation use offline demo providers and require no runtime network access or API keys. LLM integration and live retrieval are follow-up work. This starter supports workflow checks and event collection for the planned evaluation.
+
+### Desktop preview
+
+![IntentAware desktop workbench running locally](docs/images/desktop-starter.png)
+
 ## Overview
 
 **IntentAware-Agent** is a desktop AI task companion for studying, writing, and coding. It interprets side activities in the context of a user's primary goal, captures useful detours and progress, and helps users resume work after interruptions. Users can delegate non-urgent questions to a background agent and choose when to view the results.
@@ -13,10 +48,10 @@ Language / 语言：[简体中文](README.md) | **English**
 1. **Set a goal:** Enter the current task and next action, such as “Finish the Related Work section of my paper.”
 2. **Provide context:** Describe the current activity, ask a side question, or paste text for analysis.
 3. **Interpret activity:** The agent classifies it as direct progress, necessary preparation, optional exploration, or unclear, with an explanation.
-4. **Capture or delegate:** Save detours or let the agent research a side question in the background.
+4. **Capture or delegate:** Save detours or send a side question to the background agent.
 5. **Resume work:** Get an actionable next step based on confirmed progress; view delegated answers immediately or at a task checkpoint.
 
-## Core features
+## Module goals
 
 | Module | Responsibilities |
 | --- | --- |
@@ -31,13 +66,13 @@ Language / 语言：[简体中文](README.md) | **English**
 | Component | Technology |
 | --- | --- |
 | Desktop GUI | **Python + PySide6** |
-| NLP inference | Replaceable pretrained LLM API |
+| NLP inference | Offline classifier with an interface for an LLM adapter |
 | Local persistence | SQLite |
 | Background processing | Python worker / thread |
-| Experiment analysis | pandas + scikit-learn |
+| Experiment analysis (planned) | pandas + scikit-learn |
 | Automated tests | pytest |
 
-The application uses modular Python components. Users provide the context they want analyzed, while task state is stored locally. Long-running retrieval jobs execute in the background so the UI remains responsive.
+The application uses modular Python components. Users provide the context they want analyzed, while task state is stored locally. The UI runs classification and delegation in the background and applies their results on the main thread.
 
 ## Research and evaluation
 
@@ -70,8 +105,10 @@ src/intentaware/
 ├── ui/             # Desktop interface
 ├── nlp/            # Goal understanding and activity classification
 ├── memory/         # Progress, detours, and resumption
-├── delegation/     # Background requests and result delivery
-└── contracts/      # Shared schemas and interfaces
+├── delegation/     # Offline delegation provider
+├── contracts/      # Shared schemas and interfaces
+├── session.py      # Feature gates, background work, and delivery
+└── __main__.py     # Command-line entry point
 
 experiments/        # Study tasks, logs, and analysis
 tests/              # Automated tests
@@ -95,4 +132,4 @@ Group members can comment with their GitHub handle and preferred module in [Join
 
 ## Data and privacy
 
-Only use user-supplied or explicitly approved context. Keep API keys in local environment variables and avoid identifiable personal data in study records.
+The app uses context supplied by the user and stores data in local SQLite. Keep identifiable personal data out of study records. When adding a model provider, read API keys from local environment variables.

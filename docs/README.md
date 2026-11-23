@@ -2,4 +2,8 @@
 
 # 项目文档
 
-目前采用四周 PySide6 + Python + SQLite 的**拟议**简化路线。查看 [认领指南](WORKSTREAMS.md) 和 [English guide](WORKSTREAMS.en.md)。在此记录 Python 数据契约、实验协议、导师对原 Proposal 变更的确认，以及研究测量限制。当前无完整实现。
+- [桌面应用上手指南](GETTING_STARTED.md)：安装、六步演示、模块接入和测试。
+- [任务认领与验收](WORKSTREAMS.md)：各板块的任务与交付要求。
+- [共享数据](../src/intentaware/contracts/models.py)与[模块接口](../src/intentaware/contracts/interfaces.py)：跨模块输入输出约定。
+- [流程协调](../src/intentaware/session.py)：后台执行、状态更新和事件记录。
+- [测试说明](../tests/README.md)：自动化验证入口。
