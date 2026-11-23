@@ -43,4 +43,4 @@
 
 ## 统一验收
 
-代码或文档可复核、附运行/复现步骤、正常及失败场景测试，并由另一名组员审查。参考 [中文认领指南](docs/WORKSTREAMS.md) 或 [English guide](docs/WORKSTREAMS.en.md)。
+代码或文档可复核、附运行/复现步骤、正常及失败场景测试，并由另一名组员审查。参考 [任务认领与验收指南](docs/WORKSTREAMS.md)。
