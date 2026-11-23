@@ -38,6 +38,7 @@ def open_window(app, tmp_path):
 
 def test_goal_detour_and_resume_from_window(open_window):
     window, session = open_window()
+    window.correction_button.click()
     window.goal_input.setText("完成研究报告")
     window.next_step_input.setText("整理方法章节")
     window.progress_input.setText("已收集三篇论文")
@@ -47,6 +48,7 @@ def test_goal_detour_and_resume_from_window(open_window):
     assert session.progress.note == "已收集三篇论文"
 
     activity = "顺便看看新的演示文稿模板"
+    window.manual_toggle.click()
     window.activity_input.setPlainText(activity)
     window.analyze_button.click()
     assert window.activity_input.isEnabled() is False
@@ -62,6 +64,7 @@ def test_goal_detour_and_resume_from_window(open_window):
 
 def test_empty_goal_and_example_do_not_create_data(open_window):
     window, session = open_window()
+    window.correction_button.click()
     window.goal_input.setText("  ")
     window.save_goal_button.click()
     assert session.goal is None
@@ -116,13 +119,14 @@ def test_deferred_job_keeps_window_responsive_and_hides_answer(open_window):
         window.condition_combo.setCurrentIndex(window.condition_combo.findData(Condition.P.value))
         assert session.condition == Condition.P
         assert not window.submit_button.isEnabled()
-        assert not window.workflow_tabs.isTabEnabled(1)
+        assert window.delegation_unavailable.isVisible()
         assert not window.job_result.toPlainText()
 
         window.condition_combo.setCurrentIndex(window.condition_combo.findData(Condition.G.value))
         assert session.condition == Condition.G
         assert not window.detour_button.isEnabled()
-        assert not window.workflow_tabs.isTabEnabled(0)
+        window.detours_nav.click()
+        assert window.detour_unavailable.isVisible()
     finally:
         release.set()
 
