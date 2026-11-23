@@ -43,4 +43,4 @@ No Electron/React/browser extension, continuous screenshots, automatic reading o
 
 ## Definition of done
 
-Reproducible code/docs, setup steps, happy/error tests, and review by another teammate. [English claiming guide](docs/WORKSTREAMS.en.md) / [中文指南](docs/WORKSTREAMS.md).
+Reproducible code/docs, setup steps, happy/error tests, and review by another teammate. [Workstream guide (Chinese)](docs/WORKSTREAMS.md).
