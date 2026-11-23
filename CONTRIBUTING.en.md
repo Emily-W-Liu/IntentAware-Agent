@@ -18,4 +18,4 @@ Language / 语言：[简体中文](CONTRIBUTING.md) | **English**
 - [ ] G/P/I/D controls retained where applicable
 - [ ] Reviewed by another teammate
 
-[Workstream claiming and acceptance guide](docs/WORKSTREAMS.en.md)
+[Workstream claiming and acceptance guide](docs/WORKSTREAMS.md)
