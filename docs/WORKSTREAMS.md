@@ -1,48 +1,60 @@
-语言 / Language：**简体中文** | [English](WORKSTREAMS.en.md)
+# 任务认领与验收指南
 
-# 四周桌面版 · 自由认领与验收
+本项目分为六个工作板块。组员可根据兴趣与技能认领整个模块，也可以认领其中的具体子任务。
 
-> **拟议技术路线：PySide6 + Python + SQLite + LLM API；待导师确认对原 Proposal 的变更。** 不做 Chrome 扩展或跨应用自动读取。五人认领 A–E；F 为可兼任的全组接口与集成任务。
+## 认领流程
 
-## 如何认领
+1. 打开对应的 GitHub Issue，阅读开发任务、交付内容和验收标准。
+2. 在评论区写明要负责的模块或具体子任务。
+3. 确认分工后，从 `main` 创建功能分支开展开发。
+4. 完成后提交 Pull Request，附上运行方法、测试结果和需要注意的问题。
+5. 由其他组员审核，通过验收后合并代码并关闭 Issue。
 
-1. 打开 [Issues](https://github.com/Ir1svanquish/IntentAware-Agent/issues)，阅读任务、依赖、交付和验收清单。
-2. 在对应 Issue 评论「我认领 X 模块的 ___ 子任务，预计交付 ___；依赖 ___」。可多人共享模块，但要避免修改同一文件冲突。
-3. 由仓库维护者设置 Assignee 或在评论确认，组员从 `main` 创建独立功能分支。
-4. 提交 PR，说明运行方式、测试结果、遗留风险；经至少一名其他成员审查通过后合并。
-5. 所有验收项满足后才关闭 Issue。未完成部分保留并说明。
+## 开发板块
 
-## 六大板块
+| 板块 | 主要任务 | 交付目录 |
+| --- | --- | --- |
+| [A — 桌面界面与交互](https://github.com/Ir1svanquish/IntentAware-Agent/issues/1) | PySide6 主窗口、目标输入、分类展示、分心与委托交互 | `src/intentaware/ui/` |
+| [B — NLP 目标理解与活动分类](https://github.com/Ir1svanquish/IntentAware-Agent/issues/2) | 目标澄清、四类活动判断、理由生成与模型接口 | `src/intentaware/nlp/` |
+| [C — 任务记忆与恢复](https://github.com/Ir1svanquish/IntentAware-Agent/issues/3) | SQLite、任务进度、分心记录与恢复建议 | `src/intentaware/memory/` |
+| [D — 异步委托与结果展示](https://github.com/Ir1svanquish/IntentAware-Agent/issues/4) | 后台 Agent、公开来源检索、引用核验及延迟交付 | `src/intentaware/delegation/` |
+| [E — 实验设计与结果评估](https://github.com/Ir1svanquish/IntentAware-Agent/issues/5) | G/P/I/D 实验、任务日志、分类指标和结果分析 | `experiments/` |
+| [F — 数据结构与系统集成](https://github.com/Ir1svanquish/IntentAware-Agent/issues/6) | Python 数据协议、模块接口、项目依赖及集成测试 | `src/intentaware/contracts/` |
 
-| Issue | 范围 | 核心交付 |
-|---|---|---|
-| [A 桌面交互](https://github.com/Ir1svanquish/IntentAware-Agent/issues/1) | PySide6 界面，手动目标/上下文输入及功能控制 | 可运行窗口、交互、错误/加载状态 |
-| [B NLP](https://github.com/Ir1svanquish/IntentAware-Agent/issues/2) | 目标澄清、活动四分类及理由 | 可替换 LLM Adapter、Prompt、结构化输出与测试 |
-| [C 记忆与恢复](https://github.com/Ir1svanquish/IntentAware-Agent/issues/3) | Detour、SQLite、已确认进度与下一步 | CRUD、恢复建议及持久化测试 |
-| [D 委托与投递](https://github.com/Ir1svanquish/IntentAware-Agent/issues/4) | 后台检索≤2 来源、引用核查、I/D 展示 | 非阻塞 Worker、任务状态、检查点控制 |
-| [E 评估](https://github.com/Ir1svanquish/IntentAware-Agent/issues/5) | G/P/I/D、日志、标注、Baseline、Pilot | 评估脚本与可复现分析 |
-| [F 契约与集成](https://github.com/Ir1svanquish/IntentAware-Agent/issues/6) | Python 数据模型、SQLite/LLM 接口与测试集成 | 数据协议、Mock、冒烟测试；全组审核 |
+具体开发步骤和验收清单请查看各板块 Issue。
 
-## 项目共用数据契约（建议）
+## 共用接口
 
-`Goal`、`ActivityContext`、`Classification`、`Detour`、`Progress`、`DelegationJob`、`Checkpoint`、`ExperimentEvent`。先写类型/接口和模拟响应，不要因等待真实 LLM 而阻塞各模块。
+各模块围绕以下数据结构协作：
 
-**研究必须保留：** 四分类（direct progress / necessary preparation / optional exploration / unclear）；G/P/I/D 控制变量；D 允许提前查看；委托最多一次澄清及两份公开来源；实验样本与 Prompt 调试样本隔离。
+- `Goal`：任务目标与下一步行动。
+- `ActivityContext`：用户提交的活动上下文。
+- `Classification`：活动类别及判断理由。
+- `Detour`：暂存的问题、笔记和链接。
+- `Progress`：已确认的任务进度。
+- `DelegationJob`：异步委托内容与运行状态。
+- `Checkpoint`：任务检查点。
+- `ExperimentEvent`：实验事件与时间记录。
 
-**必须向导师确认：** 原 Proposal 的自动网页活动感知和「下一次有意义的主任务编辑」测量，如何映射至手动输入的桌面端。不能以「返回任务」按钮代替真正的编辑事件；可考虑在研究环境提供受控任务编辑器。
+接口字段、调用方式和错误格式以集成模块维护的统一协议为准。
 
-## 通用验收标准
+## 通用验收要求
 
-- [ ] 新环境可按 README 启动/复现，所有未实现部分明确标注
-- [ ] 提交有意义的正常及错误/边界测试
-- [ ] 输入输出符合共享 Python 数据契约
-- [ ] 无密钥或未经同意的私人上下文被提交/上传
-- [ ] 涉及模型的功能记录 Prompt/模型版本，评估不混用保留样本
-- [ ] 涉及 G/P/I/D 的功能不破坏控制条件
-- [ ] 另一位组员 Review PR；不提前关闭不满足验收条件的 Issue
+- [ ] 交付代码、必要的使用说明及测试。
+- [ ] 提供正常流程与异常情况的验证方法。
+- [ ] 输入输出符合共享的数据结构。
+- [ ] 所需依赖、配置和运行步骤完整。
+- [ ] 相关模块能够正常调用，不引入明显的集成问题。
+- [ ] 不提交 API 密钥或未经授权的私人数据。
+- [ ] 通过其他组员的 Pull Request 审核。
 
-## 一个⽉时间安排
+## 四周开发安排
 
-**第 1 周：** 范围确认、契约、可运行 UI 骨架和实验准备；**第 2 周：** NLP + Memory MVP；**第 3 周：** Delegation + Pilot；**第 4 周：** 评估、分析、报告。招募与伦理工作从第一周启动。
+| 周次 | 重点 |
+| --- | --- |
+| 第 1 周 | 开发环境、基础界面、数据结构与实验准备 |
+| 第 2 周 | NLP 分类、任务记忆与恢复流程 |
+| 第 3 周 | 异步委托、延迟展示与集成测试 |
+| 第 4 周 | 实验评估、问题修复、项目演示与最终报告 |
 
-[详细 TODO](../TODO.md) · [协作规则](../CONTRIBUTING.md)
+[返回项目首页](../README.md) · [查看完整 TODO](../TODO.md) · [团队协作规范](../CONTRIBUTING.md)
