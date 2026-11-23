@@ -84,7 +84,7 @@ CONTRIBUTING.md     # 团队协作规范
 
 项目开放六个任务板块，组员可以在对应 GitHub Issue 中认领整个模块或具体子任务：
 
-**[A 桌面界面](../../issues/1)** · **[B NLP](../../issues/2)** · **[C 任务记忆](../../issues/3)** · **[D 异步委托](../../issues/4)** · **[E 研究评估](../../issues/5)** · **[F 接口与集成](../../issues/6)**
+**[A 桌面界面](https://github.com/Ir1svanquish/IntentAware-Agent/issues/1)** · **[B NLP](https://github.com/Ir1svanquish/IntentAware-Agent/issues/2)** · **[C 任务记忆](https://github.com/Ir1svanquish/IntentAware-Agent/issues/3)** · **[D 异步委托](https://github.com/Ir1svanquish/IntentAware-Agent/issues/4)** · **[E 研究评估](https://github.com/Ir1svanquish/IntentAware-Agent/issues/5)** · **[F 接口与集成](https://github.com/Ir1svanquish/IntentAware-Agent/issues/6)**
 
 [查看所有待认领任务](https://github.com/Ir1svanquish/IntentAware-Agent/issues) · [详细认领与验收指南](docs/WORKSTREAMS.md) · [开发 TODO](TODO.md) · [协作规范](CONTRIBUTING.md)
 
