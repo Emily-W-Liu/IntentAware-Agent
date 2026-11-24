@@ -59,8 +59,9 @@ class SQLiteStore:
             self._db.execute("PRAGMA foreign_keys = ON")
             self._db.executescript(_SCHEMA)
             # Additive migration: keep existing tasks, timestamps and associations.
-            columns = {row["name"] for row in self._db.execute("PRAGMA table_info(detours)")}
             with self._db:
+                self._db.execute("BEGIN IMMEDIATE")
+                columns = {row["name"] for row in self._db.execute("PRAGMA table_info(detours)")}
                 for name in ("url", "purpose"):
                     if name not in columns:
                         self._db.execute(f"ALTER TABLE detours ADD COLUMN {name} TEXT NOT NULL DEFAULT ''")
