@@ -61,6 +61,12 @@ python -m intentaware --manual --condition P --data-dir ./local-memory-data
 
 实际桌面已确认：目标和进度保存；支线新增／编辑／删除；空输入和无效链接错误反馈；提示更新／忽略／暂停／手动恢复；用户重新启动应用后目标、进度及支线内容恢复。SQLite 独立只读连接的完整性检查为 `ok`。
 
+### Windows CI 编码修复（2026-11-24）
+
+首次 Windows CI 为 145 项通过、2 项跨进程测试失败。本地在 `cp1252` 标准输出环境中复现：子进程打印包含中文的 JSON 时发生 `UnicodeEncodeError`。测试助手现为子进程设置 `PYTHONIOENCODING=utf-8`，并在父进程显式使用 UTF-8 解码；失败时输出退出码和完整 stdout/stderr，便于定位问题。
+
+跨进程测试现在覆盖 UTF-8／cp1252 环境及暂停／未暂停两种状态的组合，修复后本地 **4 passed in 1.89s**。验证命令为 `.venv/bin/python -m pytest -q tests/test_memory_process.py`。应用代码与原有断言保持不变，Windows 全量结果以 PR 的最新 CI 记录为准。
+
 ## 已知限制及交接
 
 - 本机 macOS 实际操作条件下拉框时发生过两次 `SIGSEGV / EXC_BAD_ACCESS`。系统报告主线程栈涉及 `objc_release`、NSArray 释放与 `libqcocoa.dylib`，没有 Python 层异常；根因尚未确认。记录对应 `Python-2026-11-24-144448.ips` 和 `Python-2026-11-24-150149.ips`。实际条件切换的手动验收未完成，请 A/F 复核。实验条件控件及样式保持原样，不声明该问题已修复。
