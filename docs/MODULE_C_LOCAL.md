@@ -67,6 +67,12 @@ python -m intentaware --manual --condition P --data-dir ./local-memory-data
 
 跨进程测试现在覆盖 UTF-8／cp1252 环境及暂停／未暂停两种状态的组合，修复后本地 **4 passed in 1.89s**。验证命令为 `.venv/bin/python -m pytest -q tests/test_memory_process.py`。应用代码与原有断言保持不变，Windows 全量结果以 PR 的最新 CI 记录为准。
 
+### 旧数据库并发迁移修复（2026-11-24）
+
+按 PR #14 的评审反馈，将列清单读取和添加列操作放入同一个 `BEGIN IMMEDIATE` 事务。后启动的连接取得写锁后重新读取最新列清单，避免根据旧清单重复添加 `url` 或 `purpose`。
+
+新增真实 SQLite 双连接回归测试：先持有写锁，再让两个独立线程的连接同时到达迁移写入点后释放锁，验证两个连接均能启动，旧任务和支线完整保留，新增列各存在一次。该测试在修复前复现 `duplicate column name: url`，修复后存储、会话、恢复及跨进程相关测试 **49 passed in 2.26s**；`git diff --check` 通过。另在 50 个独立旧库上执行双连接同时打开验证，**50/50 成功**，两条连接读取的原任务和支线均保持一致。Windows 全量 CI 仍以最新工作流结果为准。
+
 ## 已知限制及交接
 
 - 本机 macOS 实际操作条件下拉框时发生过两次 `SIGSEGV / EXC_BAD_ACCESS`。系统报告主线程栈涉及 `objc_release`、NSArray 释放与 `libqcocoa.dylib`，没有 Python 层异常；根因尚未确认。记录对应 `Python-2026-11-24-144448.ips` 和 `Python-2026-11-24-150149.ips`。实际条件切换的手动验收未完成，请 A/F 复核。实验条件控件及样式保持原样，不声明该问题已修复。
