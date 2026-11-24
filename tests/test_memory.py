@@ -1,7 +1,9 @@
 """Module C acceptance: migrations, editing, recovery and atomic failures."""
 
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
+from threading import Barrier
 
 import pytest
 
@@ -44,6 +46,72 @@ def test_old_database_migrates_without_losing_records(tmp_path):
         assert reopened.list_detours("g") == [updated]
     finally:
         reopened.close()
+
+
+def test_two_connections_can_migrate_the_same_old_database(tmp_path, monkeypatch):
+    path = tmp_path / "concurrent-old.sqlite3"
+    goal = Goal(title="旧任务", next_step="继续写报告")
+    detour = Detour(goal_id=goal.id, text="旧支线")
+    seed = SQLiteStore(path)
+    try:
+        seed.save_goal(goal)
+        seed.add_detour(detour)
+    finally:
+        seed.close()
+
+    connect = sqlite3.connect
+    with connect(path) as database:
+        database.execute("ALTER TABLE detours DROP COLUMN url")
+        database.execute("ALTER TABLE detours DROP COLUMN purpose")
+
+    # Hold a real writer lock until both independent connections reach their
+    # first migration write. Without a transaction covering the schema read,
+    # both have already read the old columns and one tries to add them twice.
+    blocker = connect(path)
+    blocker.execute("BEGIN IMMEDIATE")
+    waiting_for_lock = Barrier(3)
+
+    def traced_connect(*args, **kwargs):
+        database = connect(*args, **kwargs)
+        reached_migration = False
+
+        def trace(statement):
+            nonlocal reached_migration
+            if not reached_migration and (
+                statement == "BEGIN IMMEDIATE"
+                or statement.startswith("ALTER TABLE detours ADD COLUMN")
+            ):
+                reached_migration = True
+                waiting_for_lock.wait(timeout=10)
+
+        database.set_trace_callback(trace)
+        return database
+
+    monkeypatch.setattr(sqlite3, "connect", traced_connect)
+
+    def open_old_database():
+        store = SQLiteStore(path)
+        try:
+            columns = [row["name"] for row in store._db.execute("PRAGMA table_info(detours)")]
+            return store.load_goal(), store.list_detours(goal.id), columns
+        finally:
+            store.close()
+
+    try:
+        with ThreadPoolExecutor(max_workers=2) as workers:
+            opened = [workers.submit(open_old_database) for _ in range(2)]
+            try:
+                waiting_for_lock.wait(timeout=10)
+            finally:
+                blocker.rollback()
+            results = [future.result(timeout=10) for future in opened]
+    finally:
+        blocker.close()
+
+    for restored_goal, restored_detours, columns in results:
+        assert restored_goal == goal
+        assert restored_detours == [detour]
+        assert columns.count("url") == columns.count("purpose") == 1
 
 
 def test_full_detour_crud_survives_restart(tmp_path):
