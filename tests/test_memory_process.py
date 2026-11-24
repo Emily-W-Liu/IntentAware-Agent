@@ -12,16 +12,29 @@ import pytest
 
 def run_session(path, program, condition="P"):
     source = Path(__file__).resolve().parents[1] / "src"
-    environment = {**os.environ, "PYTHONPATH": str(source)}
+    # Windows redirected stdout may use a legacy code page. Keep both ends
+    # of the pipe in UTF-8 so Chinese task data survives the JSON round trip.
+    environment = {
+        **os.environ,
+        "PYTHONPATH": str(source),
+        "PYTHONIOENCODING": "utf-8",
+    }
     result = subprocess.run(
         [sys.executable, "-c", textwrap.dedent(program), str(path), condition],
-        env=environment, capture_output=True, text=True, check=True, timeout=15,
+        env=environment, capture_output=True, text=True, encoding="utf-8",
+        check=False, timeout=15,
+    )
+    assert result.returncode == 0, (
+        f"Session subprocess exited with {result.returncode}\n"
+        f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
     )
     return json.loads(result.stdout)
 
 
 @pytest.mark.parametrize("paused", [False, True])
-def test_recovery_state_survives_separate_processes(tmp_path, paused):
+@pytest.mark.parametrize("stdio_encoding", ["utf-8", "cp1252"])
+def test_recovery_state_survives_separate_processes(tmp_path, monkeypatch, paused, stdio_encoding):
+    monkeypatch.setenv("PYTHONIOENCODING", stdio_encoding)
     path = tmp_path / "restart.sqlite3"
     written = run_session(path, f"""
         import json, sys
